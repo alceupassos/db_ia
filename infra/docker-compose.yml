@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  # 1. Gateway VPN (O Túnel)
+  vpn-gateway:
+    image: bubuntux/nordvpn:latest 
+    cap_add: [NET_ADMIN]
+    environment:
+      - USER=alceu
+      - PASS=abc123..
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    restart: always
+
+  # 2. Ponte de Dados (Node.js Sync)
+  bridge:
+    build: ./bridge
+    network_mode: service:vpn-gateway # <--- Usa a rede da VPN para acessar o ERP
+    restart: always
+    environment:
+      MSSQL_HOST: 104.234.224.238
+      MSSQL_PORT: 1445
+      MSSQL_USER: angrax
+      MSSQL_PASS: "G8f!qP2m#R7sVd1x"
+      MSSQL_DATABASE: sgc
+      SUPABASE_URL: "https://supabase.angra.io"
+      SUPABASE_KEY: "SERVICE_ROLE_KEY_HERE" # User should replace this in .env

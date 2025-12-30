@@ -1,26 +1,30 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --font-sans: "Geist Sans", system-ui, sans-serif;
+  --color-void: #02040a;
+  --color-neon: oklch(0.65 0.25 290);
+  
+  --animate-float: float 6s ease-in-out infinite;
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    @apply bg-void text-white antialiased;
+    background-image: radial-gradient(circle at 50% 0%, #1a103c 0%, transparent 60%);
+    min-height: 100vh;
+  }
+}
+
+.glass-panel {
+  @apply bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl;
+}
+
+.neon-glow {
+  box-shadow: 0 0 20px oklch(0.6 0.25 290 / 0.3);
 }
