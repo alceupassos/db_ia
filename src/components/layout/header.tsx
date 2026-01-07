@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/components/auth-provider';
 import { NotificacoesBadge } from '@/components/notificacoes-badge';
+import { CommandPalette } from '@/components/command-palette';
 
 export function Header() {
   const { user } = useAuth();

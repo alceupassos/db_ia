@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 
 interface Signature2FAVerifyProps {
@@ -167,7 +166,7 @@ export function Signature2FAVerify({
                   {[0, 1, 2, 3, 4, 5].map((i) => (
                     <Input
                       key={i}
-                      ref={(el) => (inputRefs.current[i] = el)}
+                      ref={(el: HTMLInputElement | null) => { inputRefs.current[i] = el; }}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
@@ -207,7 +206,7 @@ export function Signature2FAVerify({
               {[0, 1, 2, 3, 4, 5].map((i) => (
                 <Input
                   key={i}
-                  ref={(el) => (inputRefs.current[i] = el)}
+                  ref={(el: HTMLInputElement | null) => { inputRefs.current[i] = el; }}
                   type="text"
                   inputMode="numeric"
                   maxLength={1}
