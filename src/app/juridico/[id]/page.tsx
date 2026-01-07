@@ -6,7 +6,8 @@ import {
   updateDemanda, 
   getArquivosByDemanda, 
   vincularArquivo,
-  deleteDemanda 
+  deleteDemanda,
+  type DemandaJuridica
 } from '@/app/actions/juridico';
 import { GoogleDrivePicker, FileList } from '@/components/google-drive-picker';
 import { AISummaryButton } from '@/components/ai-summary-button';
@@ -44,9 +45,9 @@ export default function DemandaDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [demanda, setDemanda] = useState<Record<string, unknown> | null>(null);
+  const [demanda, setDemanda] = useState<DemandaJuridica | null>(null);
   const [arquivos, setArquivos] = useState<Array<Record<string, unknown>>>([]);
-  const [formData, setFormData] = useState<Record<string, unknown>>({});
+  const [formData, setFormData] = useState<Partial<DemandaJuridica>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export default function DemandaDetailPage() {
       ]);
       setDemanda(demandaData);
       setFormData(demandaData);
-      setArquivos(arquivosData);
+      setArquivos(arquivosData as Array<Record<string, unknown>>);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {
@@ -151,8 +152,8 @@ export default function DemandaDetailPage() {
         <div className="flex-1">
           {editing ? (
             <Input
-              value={formData.demanda}
-              onChange={(e) => setFormData({ ...formData, demanda: e.target.value })}
+                  value={formData.demanda || ''}
+                  onChange={(e) => setFormData({ ...formData, demanda: e.target.value })}
               className="text-2xl font-bold"
             />
           ) : (
