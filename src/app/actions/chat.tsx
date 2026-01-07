@@ -1,6 +1,6 @@
 'use server';
 
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAI } from '@ai-sdk/openai';
 import { streamUI } from '@ai-sdk/rsc';
 import { z } from 'zod';
 import { KpiCard } from '@/components/kpi-card';
@@ -10,8 +10,8 @@ import { createClient } from '@supabase/supabase-js';
 
 import { SyncStatusCard } from '@/components/sync-status';
 
-const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_API_KEY
+const openai = createOpenAI({
+    apiKey: process.env.OPENAI_API_KEY
 });
 
 const supabase = createClient(
@@ -20,7 +20,7 @@ const supabase = createClient(
 );
 
 export async function askCepalab(input: string, model: 'flash' | 'pro' = 'flash') {
-    const modelId = model === 'pro' ? 'gemini-1.5-pro' : 'gemini-3-pro-preview';
+    const modelId = 'gpt-4o';
 
     // Fetch knowledge base info to give context to the AI
     const { data: knowledge } = await supabase
@@ -32,16 +32,17 @@ export async function askCepalab(input: string, model: 'flash' | 'pro' = 'flash'
     ).join('\n') || 'Nenhum conhecimento prévio carregado.';
 
     const result = await streamUI({
-        model: google(modelId),
+        model: openai(modelId),
         prompt: input,
         system: `
       Você é o CEPALAB OS, a interface de comando do ERP SUPRA.
       
-      INSTRUÇÕES:
-      - Responda sempre de forma curta e técnica (estilo cyberpunk).
-      - Use 'render_sync_status' SEMPRE que o usuário perguntar sobre o status do sistema, sincronização ou migração.
-      - Use as outras ferramentas (render_kpi, render_chart, render_table) para exibir dados de BI.
-      - Não descreva as ferramentas que você vai usar, apenas execute-as.
+      INSTRUÇÕES CRÍTICAS:
+      - Você NÃO deve gerar textos explicativos ou responder com código.
+      - Sua única função é EXECUTAR ferramentas visuais (tools).
+      - Use 'render_sync_status' para status/sync.
+      - Use 'render_chart' para gráficos de BI.
+      - NUNCA escreva algo como "render_chart(...)" no chat. Chame a função internamente.
       
       CONHECIMENTO ATUAL:
       ${knowledgeContext}

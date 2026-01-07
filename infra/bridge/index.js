@@ -2,16 +2,17 @@ import sql from 'mssql';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: '../../.env.local' });
+dotenv.config(); // Fallback to local .env
 
 const mssqlConfig = {
     user: process.env.MSSQL_USER,
     password: process.env.MSSQL_PASS,
-    server: process.env.MSSQL_HOST,
+    server: process.env.MSSQL_HOST || process.env.MSSQL_SERVER,
     port: parseInt(process.env.MSSQL_PORT || '1445'),
     database: process.env.MSSQL_DATABASE,
     options: {
-        encrypt: false,
+        encrypt: process.env.MSSQL_ENCRYPT === 'true',
         trustServerCertificate: true
     },
     pool: {
@@ -21,10 +22,10 @@ const mssqlConfig = {
     }
 };
 
-const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY
-);
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 console.log('🚀 Cepalab Bridge Active - Listening for Sync Jobs...');
 

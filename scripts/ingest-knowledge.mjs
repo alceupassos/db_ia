@@ -12,7 +12,7 @@ const supabase = createClient(
 );
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
 const SQL_DIR = './docs/sql';
 
@@ -26,35 +26,50 @@ async function ingest() {
         const content = fs.readFileSync(filePath, 'utf8');
         const name = file.replace('.sql', '');
 
-        console.log(`🔍 Analyzing ${file}...`);
+        console.log(`🔍 Processing ${file}...`);
 
-        const prompt = `
-      Você é um especialista em BI e ERP.
-      Analise a seguinte query SQL e retorne um objeto JSON estrito com:
-      1. "explanation": Uma explicação concisa do que esta query faz.
-      2. "business_domain": O domínio de negócio (ex: Financeiro, Estoque, Vendas).
-      3. "suggested_schema": Um array de objetos { name: string, type: string } representando as colunas resultantes.
-      
-      QUERY:
-      ${content}
-      
-      Responda apenas com o JSON.
-    `;
+        let analysis = {
+            explanation: `Query para o módulo ${name}`,
+            business_domain: "ERP",
+            suggested_schema: []
+        };
 
         try {
+            console.log(`🤖 Attempting AI analysis for ${file}...`);
+            const prompt = `
+          Você é um especialista em BI e ERP.
+          Analise a seguinte query SQL e retorne um objeto JSON estrito com:
+          1. "explanation": Uma explicação concisa do que esta query faz.
+          2. "business_domain": O domínio de negócio (ex: Financeiro, Estoque, Vendas).
+          3. "suggested_schema": Um array de objetos { name: string, type: string } representando as colunas resultantes.
+          
+          QUERY:
+          ${content}
+          
+          Responda apenas com o JSON.
+        `;
+
             const result = await model.generateContent(prompt);
             const response = await result.response;
             let text = response.text().trim();
 
-            // Remove markdown code blocks if present
             if (text.startsWith('```json')) {
                 text = text.substring(7, text.length - 3);
             } else if (text.startsWith('```')) {
                 text = text.substring(3, text.length - 3);
             }
 
-            const analysis = JSON.parse(text);
+            analysis = JSON.parse(text);
+            console.log(`✨ AI metadata generated for ${file}`);
 
+        } catch (err) {
+            console.warn(`⚠️ AI analysis failed for ${file} (Proceeding with default metadata):`, err.message);
+            if (err.message.includes('leaked')) {
+                console.error("🛑 CRITICAL: Your Google API Key has been flagged as leaked. Please generate a new one at https://aistudio.google.com/");
+            }
+        }
+
+        try {
             const { error } = await supabase
                 .from('ai_known_queries')
                 .upsert({
@@ -67,10 +82,10 @@ async function ingest() {
                 }, { onConflict: 'name' });
 
             if (error) throw error;
-            console.log(`✅ ${file} ingested successfully.`);
+            console.log(`✅ ${file} ingested to database.`);
 
-        } catch (err) {
-            console.error(`❌ Error ingesting ${file}:`, err.message);
+        } catch (dbErr) {
+            console.error(`❌ Error saving ${file} to DB:`, dbErr.message);
         }
     }
 }

@@ -1,130 +1,186 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { askCepalab } from './actions/chat';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, Database, Terminal } from 'lucide-react';
+import { Send, Zap, Database, Terminal, Sparkles, Command } from 'lucide-react';
+
+type UIState = 'IDLE' | 'PROCESSING' | 'RENDERED';
 
 export default function Home() {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content: React.ReactNode }[]>([]);
+  const [uiState, setUiState] = useState<UIState>('IDLE');
+  const [currentStream, setCurrentStream] = useState<React.ReactNode>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const userMessage: { role: 'user' | 'assistant'; content: React.ReactNode } = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+    setUiState('PROCESSING');
+
+    // Reset para novo comando (ignora histórico anterior visualmente)
+    setCurrentStream(null);
 
     startTransition(async () => {
-      const response = await askCepalab(input);
-      setMessages((prev) => [...prev, { role: 'assistant', content: response }]);
+      try {
+        const response = await askCepalab(input);
+        setCurrentStream(response);
+        setUiState('RENDERED');
+      } catch (error) {
+        console.error(error);
+        setUiState('IDLE');
+      }
     });
   };
 
+  const handleReset = () => {
+    setUiState('IDLE');
+    setInput('');
+    setCurrentStream(null);
+  };
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-between p-8 relative overflow-hidden">
-      {/* Decorative Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden bg-void">
+      {/* GLOBAL AMBIENT LIGHTING */}
+      <div className="fixed inset-0 pointer-events-none data-[state=processing]:animate-pulse" data-state={uiState.toLowerCase()}>
+        <div className="absolute top-[-20%] left-[-20%] w-[60vw] h-[60vw] bg-aurora-purple/10 blur-[150px] rounded-full mix-blend-screen animate-[aurora_20s_infinite]" />
+        <div className="absolute bottom-[-20%] right-[-20%] w-[60vw] h-[60vw] bg-aurora-blue/10 blur-[150px] rounded-full mix-blend-screen animate-[aurora_15s_infinite_reverse]" />
+      </div>
 
-      {/* Header */}
-      <header className="w-full max-w-5xl flex justify-between items-center z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-neon rounded-xl flex items-center justify-center neon-glow">
-            <Zap className="text-white" size={24} />
-          </div>
-          <h1 className="text-2xl font-bold tracking-tighter">CEPALAB OS</h1>
+      {/* HEADER - DYNAMIC POSITION */}
+      <motion.header
+        layout
+        className="fixed top-8 w-full max-w-7xl flex justify-between items-center z-50 px-8"
+      >
+        <div className="flex items-center gap-3" onClick={handleReset} role="button">
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: 180 }}
+            className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center backdrop-blur-md cursor-pointer"
+          >
+            <Zap className="text-neon" size={20} fill="currentColor" />
+          </motion.div>
+          <span className="text-lg font-bold tracking-tighter text-white/80">CEPALAB OS</span>
         </div>
-        <div className="flex items-center gap-6 text-white/40 text-sm font-mono">
-          <div className="flex items-center gap-2">
-            <Database size={14} />
-            <span>ERP BRIDGE: ACTIVE</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Terminal size={14} />
-            <span>RUNTIME: GEMINI 3 FLASH</span>
-          </div>
-        </div>
-      </header>
 
-      {/* Chat Area */}
-      <div className="flex-1 w-full max-w-4xl mt-12 mb-24 overflow-y-auto custom-scrollbar flex flex-col gap-6 z-10 px-4">
-        <AnimatePresence>
-          {messages.length === 0 && (
+        <div className="flex items-center gap-6 text-xs font-mono text-white/30 uppercase tracking-widest hidden md:flex">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+            <span>Bridge Active</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Terminal size={12} />
+            <span>Gemini 2.0 Flash</span>
+          </div>
+        </div>
+      </motion.header>
+
+      {/* MAIN STAGE */}
+      <div className="relative w-full max-w-5xl z-10 flex flex-col items-center justify-center min-h-[60vh]">
+        <AnimatePresence mode="wait">
+
+          {/* STATE: IDLE (HERO PROMPT) */}
+          {uiState === 'IDLE' && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex-1 flex flex-col items-center justify-center text-center space-y-4"
+              key="idle"
+              initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-center text-center space-y-8"
             >
-              <h2 className="text-5xl font-bold tracking-tight text-white/90">
-                O que vamos analisar <br />
-                <span className="text-neon">no ERP hoje?</span>
-              </h2>
-              <p className="text-white/40 max-w-md">
-                Conexão segura via Gravity Bridge estabelecida.
-                Pergunte sobre faturamento, despesas ou KPIs financeiros.
+              <div className="relative">
+                <div className="absolute inset-0 bg-neon/20 blur-[50px] animate-pulse" />
+                <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-white relative z-10">
+                  <span className="aurora-text">Fluid</span> Intelligence
+                </h1>
+              </div>
+              <p className="text-white/40 text-lg max-w-md font-light">
+                Acesse o núcleo do ERP Supra. <br />Pergunte sobre status, faturamento ou KPIs.
               </p>
             </motion.div>
           )}
 
-          {messages.map((m, i) => (
+          {/* STATE: PROCESSING (LOADING) */}
+          {uiState === 'PROCESSING' && (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, x: m.role === 'user' ? 20 : -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              {m.role === 'user' ? (
-                <div className="bg-white/10 px-6 py-3 rounded-2xl backdrop-blur-md border border-white/10 max-w-[80%]">
-                  {m.content}
-                </div>
-              ) : (
-                <div className="w-full">
-                  {m.content}
-                </div>
-              )}
-            </motion.div>
-          ))}
-
-          {isPending && (
-            <motion.div
+              key="processing"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex justify-start"
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center"
             >
-              <div className="flex gap-1 animate-pulse">
-                <div className="w-2 h-2 bg-neon rounded-full" />
-                <div className="w-2 h-2 bg-neon/60 rounded-full" />
-                <div className="w-2 h-2 bg-neon/30 rounded-full" />
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative w-16 h-16">
+                  <div className="absolute inset-0 border-t-2 border-neon rounded-full animate-spin" />
+                  <div className="absolute inset-2 border-r-2 border-aurora-blue rounded-full animate-spin [animation-duration:2s]" />
+                  <div className="absolute inset-4 border-b-2 border-aurora-purple rounded-full animate-spin [animation-duration:3s]" />
+                </div>
+                <span className="text-xs font-mono text-neon uppercase tracking-[0.3em] animate-pulse">
+                  Synthesizing Interface...
+                </span>
               </div>
             </motion.div>
           )}
+
+          {/* STATE: RENDERED (GENERATIVE UI) */}
+          {uiState === 'RENDERED' && currentStream && (
+            <motion.div
+              key="rendered"
+              initial={{ opacity: 0, scale: 0.9, y: 40, filter: 'blur(20px)' }}
+              animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.8, type: "spring", bounce: 0.3 }}
+              className="w-full flex justify-center"
+            >
+              {currentStream}
+            </motion.div>
+          )}
+
         </AnimatePresence>
       </div>
 
-      {/* Input UI */}
-      <footer className="w-full max-w-3xl fixed bottom-8 z-20 px-4">
+      {/* INPUT DOCK (ALWAYS VISIBLE BUT MORPHS) */}
+      <motion.footer
+        layout
+        className={`fixed bottom-10 w-full z-40 transition-all duration-700 ease-[0.16,1,0.3,1] ${uiState === 'IDLE' ? 'max-w-2xl' : 'max-w-xl scale-90 opacity-40 hover:opacity-100 hover:scale-100'
+          }`}
+      >
         <form onSubmit={handleSubmit} className="relative group">
-          <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-neon to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity" />
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Comando para Cepalab.ia..."
-            className="w-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full py-5 px-8 outline-none focus:border-neon/50 focus:ring-4 focus:ring-neon/10 transition-all text-lg pr-20"
-          />
-          <button
-            type="submit"
-            disabled={isPending}
-            className="absolute right-3 top-2.5 bg-neon hover:bg-neon/80 p-2.5 rounded-full text-white transition-colors disabled:opacity-50 neon-glow"
-          >
-            <Send size={24} />
-          </button>
+          <div className={`absolute inset-0 bg-neon/20 blur-xl rounded-full transition-opacity duration-500 ${uiState === 'PROCESSING' ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`} />
+
+          <div className="relative glass-input flex items-center p-2 pl-6 overflow-hidden">
+            <Sparkles
+              size={20}
+              className={`mr-4 transition-colors ${uiState === 'PROCESSING' ? 'text-neon animate-pulse' : 'text-white/40'}`}
+            />
+
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Comando para o núcleo..."
+              disabled={uiState === 'PROCESSING'}
+              className="w-full bg-transparent border-none text-white outline-none placeholder:text-white/20 font-medium py-3"
+            />
+
+            <button
+              type="submit"
+              disabled={uiState === 'PROCESSING' || !input.trim()}
+              className="p-3 bg-white/10 hover:bg-neon hover:text-white text-white/50 rounded-full transition-all duration-300 disabled:opacity-0 disabled:scale-50"
+            >
+              <Send size={18} />
+            </button>
+          </div>
+
+          {/* HINT */}
+          <div className={`absolute -bottom-8 left-0 w-full text-center transition-opacity duration-300 ${uiState === 'IDLE' ? 'opacity-100' : 'opacity-0'}`}>
+            <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest flex items-center justify-center gap-2">
+              <Command size={10} /> Press Enter to execute
+            </span>
+          </div>
         </form>
-      </footer>
+      </motion.footer>
+
     </main>
   );
 }
