@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Scale, Search, FileText } from 'lucide-react';
 import { SkeletonTable } from '@/components/skeleton-loader';
 import { EmptyState } from '@/components/empty-state';
-import { Link } from 'next/navigation';
+import Link from 'next/link';
 
 interface Template {
   id: string;

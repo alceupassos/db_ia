@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Building2, Users } from 'lucide-react';
-import { Link } from 'next/navigation';
+import Link from 'next/link';
 import { SkeletonTable } from '@/components/skeleton-loader';
 import { EmptyState } from '@/components/empty-state';
 import { supabase } from '@/lib/supabase-client';
