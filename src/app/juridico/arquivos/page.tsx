@@ -24,8 +24,11 @@ import {
   Image,
   FileIcon,
   File,
-  Download
+  Download,
+  Link as LinkIcon,
+  CheckCircle2
 } from 'lucide-react';
+import Link from 'next/link';
 import { FileUpload } from '@/components/file-upload';
 import { FileViewer } from '@/components/file-viewer';
 import { FileChat } from '@/components/file-chat';
@@ -274,44 +277,72 @@ export default function ArquivosPage() {
           {filteredArquivos.map((arquivo) => (
             <Card key={arquivo.id} className="hover:border-primary/50 transition-colors">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                {/* Cabeçalho: Ícone, Nome e Badge Incluído */}
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted flex-shrink-0">
                     {getFileIcon(arquivo.mime_type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium truncate" title={arquivo.nome}>
-                      {arquivo.nome}
-                    </h3>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {arquivo.demanda_nome}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                      {arquivo.categoria && (
-                        <Badge variant="default" className="text-xs">
-                          {arquivo.categoria}
-                        </Badge>
-                      )}
-                      {arquivo.tipo && (
-                        <Badge variant="outline" className="text-xs">
-                          {arquivo.tipo}
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-medium truncate flex-1" title={arquivo.nome}>
+                        {arquivo.nome}
+                      </h3>
+                      {arquivo.descricao_ia && (
+                        <Badge variant="default" className="text-xs flex items-center gap-1 flex-shrink-0">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Incluído
                         </Badge>
                       )}
                     </div>
+                    {/* Demanda vinculada destacada */}
+                    {arquivo.demanda_nome && (
+                      <Link 
+                        href={`/juridico/${arquivo.demanda_id}`}
+                        className="text-xs text-primary hover:underline font-medium mt-1 flex items-center gap-1 group"
+                      >
+                        <LinkIcon className="h-3 w-3" />
+                        <span className="truncate">{arquivo.demanda_nome}</span>
+                      </Link>
+                    )}
                   </div>
                 </div>
 
-                {arquivo.descricao_ia && (
-                  <p className="text-xs text-muted-foreground mt-3 line-clamp-2" title={arquivo.descricao_ia}>
-                    {arquivo.descricao_ia}
-                  </p>
-                )}
-                {arquivo.resumo_ia && !arquivo.descricao_ia && (
-                  <p className="text-xs text-muted-foreground mt-3 line-clamp-2">
-                    {arquivo.resumo_ia}
-                  </p>
-                )}
+                {/* Layout horizontal: Categoria/Tipo à esquerda, Descrição à direita */}
+                <div className="flex gap-4 mb-3">
+                  {/* Coluna esquerda: Badges de categoria e tipo */}
+                  <div className="flex flex-col gap-2 flex-shrink-0">
+                    {arquivo.categoria && (
+                      <Badge variant="default" className="text-xs w-fit">
+                        {arquivo.categoria}
+                      </Badge>
+                    )}
+                    {arquivo.tipo && (
+                      <Badge variant="outline" className="text-xs w-fit">
+                        {arquivo.tipo}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {/* Coluna direita: Descrição */}
+                  <div className="flex-1 min-w-0">
+                    {arquivo.descricao_ia ? (
+                      <p className="text-xs text-muted-foreground line-clamp-3" title={arquivo.descricao_ia}>
+                        {arquivo.descricao_ia}
+                      </p>
+                    ) : arquivo.resumo_ia ? (
+                      <p className="text-xs text-muted-foreground line-clamp-3">
+                        {arquivo.resumo_ia}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground italic">
+                        Aguardando análise...
+                      </p>
+                    )}
+                  </div>
+                </div>
 
-                <div className="flex items-center gap-1 mt-4 pt-4 border-t">
+                {/* Ações */}
+                <div className="flex items-center gap-1 pt-3 border-t">
                   <Button
                     variant="ghost"
                     size="sm"

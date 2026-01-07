@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Prompt para categorização e descrição
+    // Prompt para categorização e resumo descritivo
     const prompt = `Você é um assistente jurídico especializado. Analise o seguinte documento jurídico e forneça:
 
 1. CATEGORIA: Classifique o documento em UMA das seguintes categorias (apenas o nome da categoria):
@@ -47,24 +47,32 @@ export async function POST(req: NextRequest) {
    - Certidão: Certidões, documentos oficiais e comprovantes
    - Outros: Documentos que não se enquadram nas categorias acima
 
-2. DESCRIÇÃO: Crie uma descrição concisa (2-4 frases) do documento explicando:
-   - O tipo de documento
-   - Seu propósito principal
-   - Informações relevantes identificadas no nome
-   - Contexto jurídico aplicável
+2. DESCRIÇÃO: Crie um resumo descritivo do documento (3-5 frases) explicando:
+   - O que é o documento (tipo e natureza)
+   - Qual o seu propósito e objetivo principal
+   - Informações relevantes extraídas do nome do arquivo (datas, partes envolvidas, assunto, etc.)
+   - Contexto jurídico e importância do documento
+   - Se possível, mencione elementos chave que possam ser identificados pelo nome
 
 Nome do documento: ${arquivoNome}
 Tipo de arquivo: ${mimeType || 'Não especificado'}
 URL: ${storageUrl || 'Não disponível'}
 
+Analise cuidadosamente o nome do arquivo para extrair informações como:
+- Datas (se houver no nome)
+- Partes envolvidas (empresas, pessoas, órgãos)
+- Tipo específico de documento
+- Assunto ou tema principal
+- Número de processo ou protocolo (se houver)
+
 Responda APENAS no seguinte formato JSON (sem markdown, sem texto adicional):
 {
   "categoria": "NomeDaCategoria",
-  "descricao": "Descrição do documento em 2-4 frases"
+  "descricao": "Resumo descritivo do documento em 3-5 frases, incluindo informações extraídas do nome"
 }`;
 
     const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: openai('gpt-5.1'),
       prompt,
       temperature: 0.3,
     });

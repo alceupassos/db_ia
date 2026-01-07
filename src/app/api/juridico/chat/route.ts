@@ -115,9 +115,8 @@ export async function POST(req: NextRequest) {
     ];
 
     // Gerar resposta com streaming
-    // TODO: Atualizar para 'gpt-5.2-mini' quando disponível
     const result = await streamText({
-      model: openai('gpt-4o-mini'), // Temporariamente usando gpt-4o-mini (GPT-5.2-mini será usado quando disponível)
+      model: openai('gpt-5.1'),
       messages,
       temperature: 0.7,
       maxOutputTokens: 2000,
