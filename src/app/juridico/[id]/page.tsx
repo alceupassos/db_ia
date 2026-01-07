@@ -283,7 +283,12 @@ export default function DemandaDetailPage() {
             </CardHeader>
             <CardContent>
               {arquivos.length > 0 ? (
-                <FileList files={arquivos} />
+                <FileList files={arquivos.map(a => ({
+                  id: String(a.id || ''),
+                  nome: String(a.nome || ''),
+                  google_drive_url: a.google_drive_url ? String(a.google_drive_url) : undefined,
+                  tipo: a.tipo ? String(a.tipo) : undefined
+                }))} />
               ) : (
                 <p className="text-sm text-muted-foreground text-center py-8">
                   Nenhum arquivo vinculado
@@ -305,18 +310,18 @@ export default function DemandaDetailPage() {
 
           {/* Resumos de Arquivos */}
           {arquivos.map((arquivo) => (
-            <Card key={arquivo.id}>
+            <Card key={String(arquivo.id || '')}>
               <CardHeader>
-                <CardTitle className="text-base">{arquivo.nome}</CardTitle>
+                <CardTitle className="text-base">{String(arquivo.nome || '')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <AISummaryButton
-                  arquivoId={arquivo.id}
-                  arquivoNome={arquivo.nome}
-                  googleDriveUrl={arquivo.google_drive_url}
+                  arquivoId={String(arquivo.id || '')}
+                  arquivoNome={String(arquivo.nome || '')}
+                  googleDriveUrl={arquivo.google_drive_url ? String(arquivo.google_drive_url) : undefined}
                 />
                 {arquivo.resumo_ia && (
-                  <p className="text-sm text-muted-foreground line-clamp-3">{arquivo.resumo_ia}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-3">{String(arquivo.resumo_ia)}</p>
                 )}
               </CardContent>
             </Card>

@@ -147,7 +147,7 @@ export function GoogleDrivePicker({ onFileSelect, disabled }: GoogleDrivePickerP
             .addView(viewIds.DOCS)
             .addView(viewIds.PDFS)
             .setOAuthToken(accessToken)
-            .setCallback((data: any) => {
+            .setCallback((data: { docs: Array<{ id: string; name: string; mimeType: string }>; [key: string]: unknown }) => {
               if (data[pickerResponse.ACTION] === actions.PICKED) {
                 const file = data.docs[0];
                 onFileSelect({
@@ -167,8 +167,8 @@ export function GoogleDrivePicker({ onFileSelect, disabled }: GoogleDrivePickerP
       });
 
       tokenClient.requestAccessToken();
-    } catch (err: any) {
-      setError(err.message || 'Erro ao abrir Google Drive Picker');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erro ao abrir Google Drive Picker');
       setLoading(false);
     }
   };
