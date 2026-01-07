@@ -75,8 +75,8 @@ export default function DemandaDetailPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateDemanda(demandaId, formData);
-      setDemanda(formData);
+      await updateDemanda(demandaId, formData as DemandaJuridica);
+      setDemanda(formData as DemandaJuridica);
       setEditing(false);
     } catch (error: unknown) {
       alert('Erro ao salvar: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
@@ -176,7 +176,7 @@ export default function DemandaDetailPage() {
                 variant="outline"
                 onClick={() => {
                   setEditing(false);
-                  setFormData(demanda);
+                  setFormData(demanda || {});
                 }}
                 size="sm"
               >
