@@ -42,6 +42,27 @@ export function Header() {
 
       {/* Right Section */}
       <div className="flex items-center gap-4">
+        {/* Command Palette Trigger */}
+        <button
+          onClick={() => {
+            // Trigger via keyboard event
+            const event = new KeyboardEvent('keydown', {
+              key: 'k',
+              metaKey: true,
+              bubbles: true
+            });
+            document.dispatchEvent(event);
+          }}
+          className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground border rounded-md hover:bg-accent"
+        >
+          <Search className="h-4 w-4" />
+          <span>Buscar</span>
+          <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium">
+            ⌘K
+          </kbd>
+        </button>
+        <CommandPalette />
+        
         {/* Notifications */}
         <NotificacoesBadge />
 

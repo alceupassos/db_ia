@@ -14,7 +14,14 @@ import {
   LogOut,
   Menu,
   Scale,
-  Sparkles
+  Sparkles,
+  MessageSquare,
+  Users,
+  Building2,
+  FileSignature,
+  Languages,
+  Shield,
+  Briefcase
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -36,6 +43,31 @@ const juridicoSubItems = [
   { icon: Sparkles, label: 'Cepalab IA', href: '#', isAction: true },
 ];
 
+const contratosSubItems = [
+  { icon: Briefcase, label: 'Templates', href: '/juridico/templates' },
+  { icon: Languages, label: 'Tradução Bicolunar', href: '/juridico/traducao' },
+  { icon: FileSignature, label: 'Assinaturas Digitais', href: '/juridico/assinaturas' },
+];
+
+const cadastrosSubItems = [
+  { icon: Building2, label: 'Empresas do Grupo', href: '/juridico/empresas' },
+  { icon: Users, label: 'Assinantes', href: '/juridico/assinantes' },
+  { icon: Briefcase, label: 'Contrapartes', href: '/juridico/contrapartes' },
+];
+
+const whatsappSubItems = [
+  { icon: MessageSquare, label: 'Chat', href: '/juridico/whatsapp' },
+  { icon: Users, label: 'Contatos', href: '/juridico/whatsapp/contatos' },
+  { icon: FileText, label: 'Lembretes', href: '/juridico/whatsapp/lembretes' },
+  { icon: Briefcase, label: 'Templates de Mensagem', href: '/juridico/whatsapp/templates' },
+];
+
+const adminSubItems = [
+  { icon: Users, label: 'Usuários', href: '/admin/usuarios' },
+  { icon: Shield, label: 'Permissões', href: '/admin/permissoes' },
+  { icon: FileText, label: 'Logs de Acesso', href: '/admin/logs' },
+];
+
 const accountItems = [
   { icon: Settings, label: 'Configurações', href: '/juridico/config' },
 ];
@@ -43,7 +75,15 @@ const accountItems = [
 function SidebarContent({ 
   pathname, 
   isJuridicoOpen, 
-  setIsJuridicoOpen, 
+  setIsJuridicoOpen,
+  isContratosOpen,
+  setIsContratosOpen,
+  isCadastrosOpen,
+  setIsCadastrosOpen,
+  isWhatsAppOpen,
+  setIsWhatsAppOpen,
+  isAdminOpen,
+  setIsAdminOpen,
   setMobileOpen, 
   signOut,
   onChatOpen
@@ -51,6 +91,14 @@ function SidebarContent({
   pathname: string | null;
   isJuridicoOpen: boolean;
   setIsJuridicoOpen: (open: boolean) => void;
+  isContratosOpen: boolean;
+  setIsContratosOpen: (open: boolean) => void;
+  isCadastrosOpen: boolean;
+  setIsCadastrosOpen: (open: boolean) => void;
+  isWhatsAppOpen: boolean;
+  setIsWhatsAppOpen: (open: boolean) => void;
+  isAdminOpen: boolean;
+  setIsAdminOpen: (open: boolean) => void;
   setMobileOpen?: (open: boolean) => void;
   signOut: () => void;
   onChatOpen?: () => void;
@@ -166,6 +214,190 @@ function SidebarContent({
               })}
             </CollapsibleContent>
           </Collapsible>
+
+          {/* Contratos */}
+          <Collapsible open={isContratosOpen} onOpenChange={setIsContratosOpen}>
+            <CollapsibleTrigger
+              className={cn(
+                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                pathname?.startsWith('/juridico/templates') || 
+                pathname?.startsWith('/juridico/traducao') ||
+                pathname?.startsWith('/juridico/assinaturas')
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <Briefcase className="h-5 w-5" />
+                <span>Contratos</span>
+              </div>
+              {isContratosOpen ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-1 space-y-1">
+              {contratosSubItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen?.(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Cadastros */}
+          <Collapsible open={isCadastrosOpen} onOpenChange={setIsCadastrosOpen}>
+            <CollapsibleTrigger
+              className={cn(
+                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                pathname?.startsWith('/juridico/empresas') || 
+                pathname?.startsWith('/juridico/assinantes') ||
+                pathname?.startsWith('/juridico/contrapartes')
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <Building2 className="h-5 w-5" />
+                <span>Cadastros</span>
+              </div>
+              {isCadastrosOpen ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-1 space-y-1">
+              {cadastrosSubItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen?.(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* WhatsApp */}
+          <Collapsible open={isWhatsAppOpen} onOpenChange={setIsWhatsAppOpen}>
+            <CollapsibleTrigger
+              className={cn(
+                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                pathname?.startsWith('/juridico/whatsapp')
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <MessageSquare className="h-5 w-5" />
+                <span>WhatsApp</span>
+              </div>
+              {isWhatsAppOpen ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-1 space-y-1">
+              {whatsappSubItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen?.(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Administração */}
+          <Collapsible open={isAdminOpen} onOpenChange={setIsAdminOpen}>
+            <CollapsibleTrigger
+              className={cn(
+                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                pathname?.startsWith('/admin')
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <Shield className="h-5 w-5" />
+                <span>Administração</span>
+              </div>
+              {isAdminOpen ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-1 space-y-1">
+              {adminSubItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen?.(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
         </nav>
       </ScrollArea>
 
@@ -233,6 +465,10 @@ export function Sidebar({
   }, [pathname]);
 
   const [isJuridicoOpen, setIsJuridicoOpen] = useState(shouldBeOpen);
+  const [isContratosOpen, setIsContratosOpen] = useState(pathname?.startsWith('/juridico/templates') || pathname?.startsWith('/juridico/traducao') || pathname?.startsWith('/juridico/assinaturas') || false);
+  const [isCadastrosOpen, setIsCadastrosOpen] = useState(pathname?.startsWith('/juridico/empresas') || pathname?.startsWith('/juridico/assinantes') || pathname?.startsWith('/juridico/contrapartes') || false);
+  const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(pathname?.startsWith('/juridico/whatsapp') || false);
+  const [isAdminOpen, setIsAdminOpen] = useState(pathname?.startsWith('/admin') || false);
   const prevShouldBeOpenRef = useRef(shouldBeOpen);
 
   // Sincronizar apenas quando shouldBeOpen mudar para true (expandir automaticamente)
@@ -254,6 +490,14 @@ export function Sidebar({
           pathname={pathname}
           isJuridicoOpen={isJuridicoOpen}
           setIsJuridicoOpen={setIsJuridicoOpen}
+          isContratosOpen={isContratosOpen}
+          setIsContratosOpen={setIsContratosOpen}
+          isCadastrosOpen={isCadastrosOpen}
+          setIsCadastrosOpen={setIsCadastrosOpen}
+          isWhatsAppOpen={isWhatsAppOpen}
+          setIsWhatsAppOpen={setIsWhatsAppOpen}
+          isAdminOpen={isAdminOpen}
+          setIsAdminOpen={setIsAdminOpen}
           setMobileOpen={setMobileOpen}
           signOut={signOut}
           onChatOpen={onChatOpen}
@@ -267,6 +511,14 @@ export function Sidebar({
             pathname={pathname}
             isJuridicoOpen={isJuridicoOpen}
             setIsJuridicoOpen={setIsJuridicoOpen}
+            isContratosOpen={isContratosOpen}
+            setIsContratosOpen={setIsContratosOpen}
+            isCadastrosOpen={isCadastrosOpen}
+            setIsCadastrosOpen={setIsCadastrosOpen}
+            isWhatsAppOpen={isWhatsAppOpen}
+            setIsWhatsAppOpen={setIsWhatsAppOpen}
+            isAdminOpen={isAdminOpen}
+            setIsAdminOpen={setIsAdminOpen}
             setMobileOpen={setMobileOpen}
             signOut={signOut}
           />
