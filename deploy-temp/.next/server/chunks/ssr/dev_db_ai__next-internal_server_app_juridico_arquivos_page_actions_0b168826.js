@@ -1,0 +1,3 @@
+module.exports=[93819,a=>{"use strict";var b=a.i(53980);a.s([],16699),a.i(16699),a.s(["404b748f0b1946809009224a95532ef6f14a9fe75e",()=>b.getDemandas,"405509919c95f69114ebfb766c00fc695ee77859f5",()=>b.deleteArquivoComStorage,"4076e8c2e387c7d83696aa442105ed9ea5c57c98af",()=>b.getArquivosByDemanda,"60ae6ae0e8deba2b7fa7d4c1b4430c5a3dfc7e11fb",()=>b.uploadArquivo],93819)}];
+
+//# sourceMappingURL=dev_db_ai__next-internal_server_app_juridico_arquivos_page_actions_0b168826.js.map

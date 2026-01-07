@@ -6,12 +6,15 @@ import {
   getKPIs, 
   getUniqueResponsaveis, 
   getUniqueClientes,
+  deleteDemanda,
+  updateDemandaField,
   type DemandaJuridica,
   type DemandaFilters 
 } from '@/app/actions/juridico';
 import { KPICard } from '@/components/dashboard/kpi-card';
 import { AreaChartComponent } from '@/components/dashboard/area-chart';
 import { ProgressRing } from '@/components/dashboard/progress-ring';
+import { CalendarioPagamentos } from '@/components/calendario-pagamentos';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,11 +28,23 @@ import {
   Loader2,
   AlertCircle,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Pencil,
+  Trash2
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 export default function JuridicoDashboard() {
+  const router = useRouter();
   const [demandas, setDemandas] = useState<DemandaJuridica[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<DemandaFilters>({});
@@ -37,6 +52,8 @@ export default function JuridicoDashboard() {
   const [responsaveis, setResponsaveis] = useState<string[]>([]);
   const [clientes, setClientes] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [demandaToDelete, setDemandaToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -64,6 +81,31 @@ export default function JuridicoDashboard() {
 
   const handleSearch = () => {
     setFilters({ ...filters, search: searchTerm || undefined });
+  };
+
+  const handleEdit = (demandaId: string) => {
+    router.push(`/juridico/${demandaId}`);
+  };
+
+  const handleDeleteClick = (demandaId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDemandaToDelete(demandaId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!demandaToDelete) return;
+    try {
+      await deleteDemanda(demandaToDelete);
+      setDemandas(demandas.filter(d => d.id !== demandaToDelete));
+      setDeleteDialogOpen(false);
+      setDemandaToDelete(null);
+      loadData();
+    } catch (error) {
+      console.error('Erro ao excluir demanda:', error);
+      alert('Erro ao excluir demanda');
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -137,8 +179,8 @@ export default function JuridicoDashboard() {
         />
       </div>
 
-      {/* Charts and Progress */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      {/* Charts, Calendar and Progress */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-10">
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Evolução Mensal</CardTitle>
@@ -147,49 +189,54 @@ export default function JuridicoDashboard() {
             <AreaChartComponent data={monthlyData} title="" />
           </CardContent>
         </Card>
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Progresso Geral</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Concluídos</p>
-                <p className="text-xs text-muted-foreground">
-                  {kpis.concluidos} de {kpis.total} demandas
-                </p>
+        <div className="col-span-3 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Progresso Geral</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">Concluídos</p>
+                  <p className="text-xs text-muted-foreground">
+                    {kpis.concluidos} de {kpis.total} demandas
+                  </p>
+                </div>
+                <ProgressRing 
+                  value={kpis.total > 0 ? Math.round((kpis.concluidos / kpis.total) * 100) : 0}
+                  color="hsl(var(--success))"
+                />
               </div>
-              <ProgressRing 
-                value={kpis.total > 0 ? Math.round((kpis.concluidos / kpis.total) * 100) : 0}
-                color="hsl(var(--success))"
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Em Andamento</p>
-                <p className="text-xs text-muted-foreground">
-                  {kpis.emAndamento} demandas ativas
-                </p>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">Em Andamento</p>
+                  <p className="text-xs text-muted-foreground">
+                    {kpis.emAndamento} demandas ativas
+                  </p>
+                </div>
+                <ProgressRing 
+                  value={kpis.total > 0 ? Math.round((kpis.emAndamento / kpis.total) * 100) : 0}
+                  color="hsl(var(--warning))"
+                />
               </div>
-              <ProgressRing 
-                value={kpis.total > 0 ? Math.round((kpis.emAndamento / kpis.total) * 100) : 0}
-                color="hsl(var(--warning))"
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Pendentes</p>
-                <p className="text-xs text-muted-foreground">
-                  {kpis.pendentes} aguardando
-                </p>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">Pendentes</p>
+                  <p className="text-xs text-muted-foreground">
+                    {kpis.pendentes} aguardando
+                  </p>
+                </div>
+                <ProgressRing 
+                  value={kpis.total > 0 ? Math.round((kpis.pendentes / kpis.total) * 100) : 0}
+                  color="hsl(var(--error))"
+                />
               </div>
-              <ProgressRing 
-                value={kpis.total > 0 ? Math.round((kpis.pendentes / kpis.total) * 100) : 0}
-                color="hsl(var(--error))"
-              />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="col-span-3">
+          <CalendarioPagamentos />
+        </div>
       </div>
 
       {/* Demandas List */}
@@ -228,40 +275,81 @@ export default function JuridicoDashboard() {
           ) : (
             <div className="space-y-4">
               {demandas.slice(0, 10).map((demanda) => (
-                <Link
+                <div
                   key={demanda.id}
-                  href={`/juridico/${demanda.id}`}
-                  className="block rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent"
+                  className="flex items-start gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-semibold">{demanda.demanda}</h3>
-                        {getStatusBadge(demanda.status)}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {demanda.cliente_nome}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          {demanda.responsavel}
-                        </div>
-                        {demanda.data_solicitacao && (
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {new Date(demanda.data_solicitacao).toLocaleDateString('pt-BR')}
-                          </div>
-                        )}
-                      </div>
+                  <Link
+                    href={`/juridico/${demanda.id}`}
+                    className="flex-1 space-y-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-semibold">{demanda.demanda}</h3>
+                      {getStatusBadge(demanda.status)}
                     </div>
+                    <p className="text-sm text-muted-foreground">
+                      {demanda.cliente_nome}
+                    </p>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <User className="h-3 w-3" />
+                        {demanda.responsavel}
+                      </div>
+                      {demanda.data_solicitacao && (
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(demanda.data_solicitacao).toLocaleDateString('pt-BR')}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleEdit(demanda.id);
+                      }}
+                      className="h-8 w-8"
+                    >
+                      <Pencil className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => handleDeleteClick(demanda.id, e)}
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir Demanda</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja excluir esta demanda? Esta ação não pode ser desfeita.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,0 +1,3 @@
+module.exports=[86222,a=>{"use strict";var b=a.i(53980);a.s([],43289),a.i(43289),a.s(["401e67d38b57b3c4dad7b28a34e7f256632b736dfd",()=>b.deleteDemanda,"405509919c95f69114ebfb766c00fc695ee77859f5",()=>b.deleteArquivoComStorage,"4076e8c2e387c7d83696aa442105ed9ea5c57c98af",()=>b.getArquivosByDemanda,"4081b83b7434af1baf51baeeaaf1545216e9b463a2",()=>b.getDemandaById,"608ed05da6f063626207bbce3f2bb17e69fdfee246",()=>b.updateDemanda,"60ae6ae0e8deba2b7fa7d4c1b4430c5a3dfc7e11fb",()=>b.uploadArquivo,"60c46d9d9c884a3b4a65ebcc5a05e6958fed35d7f2",()=>b.updateArquivo,"7085d384e28081877c94ab341cb2e8f016ec35f45c",()=>b.updateDemandaField],86222)}];
+
+//# sourceMappingURL=dev_db_ai__next-internal_server_app_juridico_%5Bid%5D_page_actions_f4d2a105.js.map

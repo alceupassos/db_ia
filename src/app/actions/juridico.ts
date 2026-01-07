@@ -16,6 +16,8 @@ export interface DemandaJuridica {
   data_solicitacao: string | null;
   prazo: string | null;
   data_entrega: string | null;
+  data_pagamento: string | null;
+  data_fim_contrato: string | null;
   status: 'PENDENTE' | 'EM ANDAMENTO' | 'CONCLUÍDO' | 'Cancelado';
   observacoes: string | null;
   documentos_assinados: string;
@@ -168,4 +170,108 @@ export async function vincularArquivo(demandaId: string, arquivo: {
 
   if (error) throw error;
   return data;
+}
+
+export async function updateDemandaField(id: string, field: keyof DemandaJuridica, value: unknown) {
+  const { data, error } = await supabase
+    .from('demandas_juridicas')
+    .update({ [field]: value })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as DemandaJuridica;
+}
+
+export async function deleteArquivo(arquivoId: string) {
+  const { error } = await supabase
+    .from('arquivos_demanda')
+    .delete()
+    .eq('id', arquivoId);
+
+  if (error) throw error;
+}
+
+export async function updateArquivo(arquivoId: string, updates: {
+  nome?: string;
+  tipo?: string;
+}) {
+  const { data, error } = await supabase
+    .from('arquivos_demanda')
+    .update(updates)
+    .eq('id', arquivoId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function uploadArquivo(demandaId: string, formData: FormData) {
+  const file = formData.get('file') as File;
+  if (!file) throw new Error('Nenhum arquivo enviado');
+
+  const fileName = `${demandaId}/${Date.now()}-${file.name}`;
+  
+  // Upload para Supabase Storage
+  const { data: uploadData, error: uploadError } = await supabase
+    .storage
+    .from('arquivos-juridico')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+  if (uploadError) throw uploadError;
+
+  // Obter URL pública
+  const { data: urlData } = supabase
+    .storage
+    .from('arquivos-juridico')
+    .getPublicUrl(fileName);
+
+  // Salvar referência no banco
+  const { data, error } = await supabase
+    .from('arquivos_demanda')
+    .insert({
+      demanda_id: demandaId,
+      nome: file.name,
+      tipo: file.type.split('/')[1]?.toUpperCase() || 'ARQUIVO',
+      mime_type: file.type,
+      supabase_path: uploadData.path,
+      storage_url: urlData.publicUrl
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteArquivoComStorage(arquivoId: string) {
+  // Buscar arquivo para pegar o path
+  const { data: arquivo, error: fetchError } = await supabase
+    .from('arquivos_demanda')
+    .select('supabase_path')
+    .eq('id', arquivoId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  // Deletar do storage se existir
+  if (arquivo?.supabase_path) {
+    await supabase
+      .storage
+      .from('arquivos-juridico')
+      .remove([arquivo.supabase_path]);
+  }
+
+  // Deletar do banco
+  const { error } = await supabase
+    .from('arquivos_demanda')
+    .delete()
+    .eq('id', arquivoId);
+
+  if (error) throw error;
 }

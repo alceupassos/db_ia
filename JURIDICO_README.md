@@ -45,18 +45,51 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 
 ### 3. Executar Migrações
 
+**IMPORTANTE:** As tabelas precisam ser criadas no Supabase antes de importar os dados.
+
+**Opção 1 - Via Supabase Dashboard (Recomendado):**
+1. Acesse o [Supabase Dashboard](https://app.supabase.com)
+2. Selecione seu projeto
+3. Vá em **SQL Editor**
+4. Clique em **New Query**
+5. Copie o conteúdo do arquivo `supabase/migrations/002_juridico.sql`
+6. Cole no editor e execute (Run)
+
+**Opção 2 - Via Supabase CLI:**
 ```bash
-# Aplicar migration do banco de dados
-npm run migrate
-# ou através do Supabase Dashboard: SQL Editor > Run migration 002_juridico.sql
+# Se tiver Supabase CLI instalado
+supabase migration up
 ```
 
+**Opção 3 - Executar SQL direto:**
+```bash
+node scripts/apply-migration.mjs
+```
+
+**Verificar se funcionou:**
+Após aplicar a migração, você deve ver as tabelas:
+- `clientes`
+- `demandas_juridicas`
+- `arquivos_demanda`
+- `resumos_contratos`
+
 ### 4. Importar Dados Iniciais
+
+**IMPORTANTE:** Execute apenas após aplicar a migração (passo 3)!
 
 ```bash
 # Importar dados da planilha Excel
 node scripts/import-excel.mjs
 ```
+
+Este script irá:
+- Ler o arquivo `demandasjuridico.xlsx`
+- Criar 84 clientes únicos na tabela `clientes`
+- Inserir 97 demandas jurídicas na tabela `demandas_juridicas`
+
+**Se aparecer erro "Could not find the table":**
+- Verifique se aplicou a migração corretamente (passo 3)
+- Verifique se está usando as variáveis de ambiente corretas no `.env.local`
 
 ## Estrutura do Sistema
 

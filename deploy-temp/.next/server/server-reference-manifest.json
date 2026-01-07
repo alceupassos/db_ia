@@ -1,0 +1,250 @@
+{
+  "node": {
+    "404b748f0b1946809009224a95532ef6f14a9fe75e": {
+      "workers": {
+        "app/juridico/arquivos/page": {
+          "moduleId": 93819,
+          "async": false,
+          "exportedName": "getDemandas",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        },
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getDemandas",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/arquivos/page": "action-browser",
+        "app/juridico/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "getDemandas"
+    },
+    "008c67a34b93be7aa0521a8693a859ec5059b72495": {
+      "workers": {
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getKPIs",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "getKPIs"
+    },
+    "00026e1710be57f038693261f67e8e67c5c0b599f8": {
+      "workers": {
+        "app/juridico/nova/page": {
+          "moduleId": 66574,
+          "async": false,
+          "exportedName": "getUniqueResponsaveis",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        },
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getUniqueResponsaveis",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/nova/page": "action-browser",
+        "app/juridico/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "getUniqueResponsaveis"
+    },
+    "00f512c64707a4985c37eb46128af65ae3dc4ac475": {
+      "workers": {
+        "app/juridico/nova/page": {
+          "moduleId": 66574,
+          "async": false,
+          "exportedName": "getUniqueClientes",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        },
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getUniqueClientes",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/nova/page": "action-browser",
+        "app/juridico/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "getUniqueClientes"
+    },
+    "401e67d38b57b3c4dad7b28a34e7f256632b736dfd": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "deleteDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        },
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "deleteDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser",
+        "app/juridico/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "deleteDemanda"
+    },
+    "4081b83b7434af1baf51baeeaaf1545216e9b463a2": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "getDemandaById",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "getDemandaById"
+    },
+    "608ed05da6f063626207bbce3f2bb17e69fdfee246": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "updateDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "updateDemanda"
+    },
+    "4076e8c2e387c7d83696aa442105ed9ea5c57c98af": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "getArquivosByDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        },
+        "app/juridico/arquivos/page": {
+          "moduleId": 93819,
+          "async": false,
+          "exportedName": "getArquivosByDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser",
+        "app/juridico/arquivos/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "getArquivosByDemanda"
+    },
+    "60ae6ae0e8deba2b7fa7d4c1b4430c5a3dfc7e11fb": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "uploadArquivo",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        },
+        "app/juridico/arquivos/page": {
+          "moduleId": 93819,
+          "async": false,
+          "exportedName": "uploadArquivo",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser",
+        "app/juridico/arquivos/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "uploadArquivo"
+    },
+    "7085d384e28081877c94ab341cb2e8f016ec35f45c": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "updateDemandaField",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "updateDemandaField"
+    },
+    "60c46d9d9c884a3b4a65ebcc5a05e6958fed35d7f2": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "updateArquivo",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "updateArquivo"
+    },
+    "405509919c95f69114ebfb766c00fc695ee77859f5": {
+      "workers": {
+        "app/juridico/[id]/page": {
+          "moduleId": 86222,
+          "async": false,
+          "exportedName": "deleteArquivoComStorage",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        },
+        "app/juridico/arquivos/page": {
+          "moduleId": 93819,
+          "async": false,
+          "exportedName": "deleteArquivoComStorage",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/[id]/page": "action-browser",
+        "app/juridico/arquivos/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "deleteArquivoComStorage"
+    },
+    "4027a9edcf961ae7b0f5af4b119d41462f5443359c": {
+      "workers": {
+        "app/juridico/nova/page": {
+          "moduleId": 66574,
+          "async": false,
+          "exportedName": "createDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/nova/page": "action-browser"
+      },
+      "filename": "dev/db_ai/src/app/actions/juridico.ts",
+      "exportedName": "createDemanda"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "PXBjPy4SlnXA+xLp+51E5rstRv41/8Ssji0o3rK+AyY="
+}

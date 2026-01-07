@@ -1,0 +1,3 @@
+module.exports=[66574,a=>{"use strict";var b=a.i(53980);a.s([],8347),a.i(8347),a.s(["00026e1710be57f038693261f67e8e67c5c0b599f8",()=>b.getUniqueResponsaveis,"00f512c64707a4985c37eb46128af65ae3dc4ac475",()=>b.getUniqueClientes,"4027a9edcf961ae7b0f5af4b119d41462f5443359c",()=>b.createDemanda],66574)}];
+
+//# sourceMappingURL=dev_db_ai__next-internal_server_app_juridico_nova_page_actions_5b5ffcf5.js.map

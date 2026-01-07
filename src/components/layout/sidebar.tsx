@@ -13,7 +13,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  Scale
+  Scale,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -32,6 +33,7 @@ const juridicoSubItems = [
   { icon: FileText, label: 'Demandas', href: '/juridico' },
   { icon: FolderOpen, label: 'Arquivos', href: '/juridico/arquivos' },
   { icon: BarChart3, label: 'Relatórios', href: '/juridico/relatorios' },
+  { icon: Sparkles, label: 'Cepalab IA', href: '#', isAction: true },
 ];
 
 const accountItems = [
@@ -43,13 +45,15 @@ function SidebarContent({
   isJuridicoOpen, 
   setIsJuridicoOpen, 
   setMobileOpen, 
-  signOut 
+  signOut,
+  onChatOpen
 }: { 
   pathname: string | null;
   isJuridicoOpen: boolean;
   setIsJuridicoOpen: (open: boolean) => void;
   setMobileOpen?: (open: boolean) => void;
   signOut: () => void;
+  onChatOpen?: () => void;
 }) {
   // Verificar se algum subitem do menu Jurídico está ativo
   const isJuridicoActive = useMemo(() => {
@@ -112,15 +116,35 @@ function SidebarContent({
                   } else if (item.label === 'Demandas') {
                     // Demandas ativo em /juridico ou subrotas que não sejam outras seções
                     isActive = pathname === '/juridico' || 
-                      (pathname?.startsWith('/juridico/') && 
-                       !pathname?.startsWith('/juridico/arquivos') && 
-                       !pathname?.startsWith('/juridico/relatorios') &&
-                       !pathname?.startsWith('/juridico/config'));
+                      (!!pathname && pathname.startsWith('/juridico/') && 
+                       !pathname.startsWith('/juridico/arquivos') && 
+                       !pathname.startsWith('/juridico/relatorios') &&
+                       !pathname.startsWith('/juridico/config'));
                   } else {
                     isActive = pathname === item.href;
                   }
                 } else {
-                  isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                  isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
+                }
+                
+                // Se for ação (como Cepalab IA), não usa Link
+                if ((item as { isAction?: boolean }).isAction && onChatOpen) {
+                  return (
+                    <button
+                      key={`${item.href}-${item.label}`}
+                      onClick={() => {
+                        onChatOpen();
+                        setMobileOpen?.(false);
+                      }}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors w-full text-left",
+                        "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                    </button>
+                  );
                 }
                 
                 return (
@@ -186,7 +210,15 @@ function SidebarContent({
   );
 }
 
-export function Sidebar({ mobileOpen, setMobileOpen }: { mobileOpen?: boolean; setMobileOpen?: (open: boolean) => void }) {
+export function Sidebar({ 
+  mobileOpen, 
+  setMobileOpen, 
+  onChatOpen 
+}: { 
+  mobileOpen?: boolean; 
+  setMobileOpen?: (open: boolean) => void;
+  onChatOpen?: () => void;
+}) {
   const pathname = usePathname();
   const { signOut } = useAuth();
 
@@ -224,6 +256,7 @@ export function Sidebar({ mobileOpen, setMobileOpen }: { mobileOpen?: boolean; s
           setIsJuridicoOpen={setIsJuridicoOpen}
           setMobileOpen={setMobileOpen}
           signOut={signOut}
+          onChatOpen={onChatOpen}
         />
       </aside>
 

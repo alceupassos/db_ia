@@ -76,6 +76,8 @@ export default function NovaDemandaPage() {
         data_solicitacao: formData.data_solicitacao || null,
         prazo: formData.prazo || null,
         data_entrega: formData.data_entrega || null,
+        data_pagamento: null,
+        data_fim_contrato: null,
         observacoes: formData.observacoes || null,
         cliente_id: null
       });

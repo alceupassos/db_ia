@@ -1,0 +1,137 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    },
+    {
+      "source": "/",
+      "destination": "/login",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/(?:/)?$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/juridico/[id]",
+      "regex": "^/juridico/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/juridico/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/api/juridico/buscar-semantica",
+      "regex": "^/api/juridico/buscar\\-semantica(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/juridico/buscar\\-semantica(?:/)?$"
+    },
+    {
+      "page": "/api/juridico/chat",
+      "regex": "^/api/juridico/chat(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/juridico/chat(?:/)?$"
+    },
+    {
+      "page": "/api/juridico/file-chat",
+      "regex": "^/api/juridico/file\\-chat(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/juridico/file\\-chat(?:/)?$"
+    },
+    {
+      "page": "/api/juridico/resumir-contrato",
+      "regex": "^/api/juridico/resumir\\-contrato(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/juridico/resumir\\-contrato(?:/)?$"
+    },
+    {
+      "page": "/dashboard/financeiro",
+      "regex": "^/dashboard/financeiro(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/financeiro(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/juridico",
+      "regex": "^/juridico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/juridico(?:/)?$"
+    },
+    {
+      "page": "/juridico/arquivos",
+      "regex": "^/juridico/arquivos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/juridico/arquivos(?:/)?$"
+    },
+    {
+      "page": "/juridico/nova",
+      "regex": "^/juridico/nova(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/juridico/nova(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

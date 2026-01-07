@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/juridico/layout,_N_T_/juridico/arquivos/layout,_N_T_/juridico/arquivos/page,_N_T_/juridico/arquivos"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/juridico/arquivos/__PAGE__",
+    "/juridico/arquivos",
+    "/juridico",
+    "/_index",
+    "/_head"
+  ]
+}

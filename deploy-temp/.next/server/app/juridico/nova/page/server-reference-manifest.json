@@ -1,0 +1,50 @@
+{
+  "node": {
+    "4027a9edcf961ae7b0f5af4b119d41462f5443359c": {
+      "workers": {
+        "app/juridico/nova/page": {
+          "moduleId": 66574,
+          "async": false,
+          "exportedName": "createDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/nova/page": "action-browser"
+      },
+      "exportedName": "createDemanda",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "00f512c64707a4985c37eb46128af65ae3dc4ac475": {
+      "workers": {
+        "app/juridico/nova/page": {
+          "moduleId": 66574,
+          "async": false,
+          "exportedName": "getUniqueClientes",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/nova/page": "action-browser"
+      },
+      "exportedName": "getUniqueClientes",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "00026e1710be57f038693261f67e8e67c5c0b599f8": {
+      "workers": {
+        "app/juridico/nova/page": {
+          "moduleId": 66574,
+          "async": false,
+          "exportedName": "getUniqueResponsaveis",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/nova/page": "action-browser"
+      },
+      "exportedName": "getUniqueResponsaveis",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    }
+  },
+  "edge": {}
+}

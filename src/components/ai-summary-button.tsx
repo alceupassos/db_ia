@@ -9,11 +9,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 interface AISummaryButtonProps {
   arquivoId: string;
   arquivoNome: string;
-  googleDriveUrl?: string;
+  storageUrl?: string;
   onSummaryGenerated?: (summary: string) => void;
 }
 
-export function AISummaryButton({ arquivoId, arquivoNome, googleDriveUrl, onSummaryGenerated }: AISummaryButtonProps) {
+export function AISummaryButton({ arquivoId, arquivoNome, storageUrl, onSummaryGenerated }: AISummaryButtonProps) {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +31,7 @@ export function AISummaryButton({ arquivoId, arquivoNome, googleDriveUrl, onSumm
         body: JSON.stringify({
           arquivoId,
           arquivoNome,
-          googleDriveUrl
+          storageUrl
         }),
       });
 
@@ -55,7 +55,7 @@ export function AISummaryButton({ arquivoId, arquivoNome, googleDriveUrl, onSumm
     <div className="space-y-4">
       <Button
         onClick={generateSummary}
-        disabled={loading || !googleDriveUrl}
+        disabled={loading || !storageUrl}
         variant="outline"
         className="w-full"
       >

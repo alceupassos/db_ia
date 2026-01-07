@@ -1,0 +1,3 @@
+module.exports=[19114,a=>{"use strict";var b=a.i(53980);a.s([],96426),a.i(96426),a.s(["00026e1710be57f038693261f67e8e67c5c0b599f8",()=>b.getUniqueResponsaveis,"008c67a34b93be7aa0521a8693a859ec5059b72495",()=>b.getKPIs,"00f512c64707a4985c37eb46128af65ae3dc4ac475",()=>b.getUniqueClientes,"401e67d38b57b3c4dad7b28a34e7f256632b736dfd",()=>b.deleteDemanda,"404b748f0b1946809009224a95532ef6f14a9fe75e",()=>b.getDemandas],19114)}];
+
+//# sourceMappingURL=dev_db_ai__next-internal_server_app_juridico_page_actions_c02b7ee0.js.map

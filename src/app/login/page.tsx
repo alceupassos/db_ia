@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { supabase } from '@/lib/supabase-client';
-import { Mail, Loader2, Lock, Eye, EyeOff, FileText } from 'lucide-react';
+import { Mail, Loader2, Lock, Eye, EyeOff, FileText, Scale } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [selectedArea, setSelectedArea] = useState<string>('juridico');
   const router = useRouter();
 
   const handleMagicLinkLogin = async (e: FormEvent) => {
@@ -29,15 +30,15 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          emailRedirectTo: `${window.location.origin}/juridico`
+          emailRedirectTo: `${window.location.origin}/${selectedArea}`
         }
       });
 
       if (error) throw error;
 
       setMessage('Verifique seu email! Enviamos um link mágico para fazer login.');
-    } catch (error: any) {
-      setMessage(error.message || 'Erro ao enviar email. Tente novamente.');
+    } catch (error: unknown) {
+      setMessage((error instanceof Error ? error.message : 'Erro ao enviar email. Tente novamente.'));
     } finally {
       setLoading(false);
     }
@@ -51,16 +52,16 @@ export default function LoginPage() {
     setMessage('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),
       });
 
       if (error) throw error;
 
-      router.push('/juridico');
-    } catch (error: any) {
-      setMessage(error.message || 'Email ou senha incorretos. Tente novamente.');
+      router.push(`/${selectedArea}`);
+    } catch (error: unknown) {
+      setMessage((error instanceof Error ? error.message : 'Email ou senha incorretos. Tente novamente.'));
     } finally {
       setLoading(false);
     }
@@ -83,6 +84,25 @@ export default function LoginPage() {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Seletor de Área */}
+          <div className="mb-6">
+            <Label className="mb-2 block">Selecione a Área</Label>
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedArea('juridico')}
+                className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                  selectedArea === 'juridico'
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+              >
+                <Scale className="h-5 w-5" />
+                <span className="text-sm font-medium">Jurídico</span>
+              </button>
+            </div>
+          </div>
+
           {/* Toggle entre Magic Link e Senha */}
           <div className="flex gap-2 mb-6 p-1 bg-muted rounded-lg">
             <button

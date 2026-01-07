@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/juridico/layout,_N_T_/juridico/nova/layout,_N_T_/juridico/nova/page,_N_T_/juridico/nova"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/juridico/nova/__PAGE__",
+    "/juridico/nova",
+    "/juridico",
+    "/_index",
+    "/_head"
+  ]
+}

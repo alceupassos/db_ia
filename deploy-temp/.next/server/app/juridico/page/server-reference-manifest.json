@@ -1,0 +1,80 @@
+{
+  "node": {
+    "404b748f0b1946809009224a95532ef6f14a9fe75e": {
+      "workers": {
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getDemandas",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/page": "action-browser"
+      },
+      "exportedName": "getDemandas",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "008c67a34b93be7aa0521a8693a859ec5059b72495": {
+      "workers": {
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getKPIs",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/page": "action-browser"
+      },
+      "exportedName": "getKPIs",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "00026e1710be57f038693261f67e8e67c5c0b599f8": {
+      "workers": {
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getUniqueResponsaveis",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/page": "action-browser"
+      },
+      "exportedName": "getUniqueResponsaveis",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "00f512c64707a4985c37eb46128af65ae3dc4ac475": {
+      "workers": {
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "getUniqueClientes",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/page": "action-browser"
+      },
+      "exportedName": "getUniqueClientes",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "401e67d38b57b3c4dad7b28a34e7f256632b736dfd": {
+      "workers": {
+        "app/juridico/page": {
+          "moduleId": 19114,
+          "async": false,
+          "exportedName": "deleteDemanda",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/page": "action-browser"
+      },
+      "exportedName": "deleteDemanda",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    }
+  },
+  "edge": {}
+}

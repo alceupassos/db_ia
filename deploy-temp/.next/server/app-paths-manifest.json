@@ -1,0 +1,16 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/juridico/buscar-semantica/route": "app/api/juridico/buscar-semantica/route.js",
+  "/api/juridico/chat/route": "app/api/juridico/chat/route.js",
+  "/api/juridico/file-chat/route": "app/api/juridico/file-chat/route.js",
+  "/api/juridico/resumir-contrato/route": "app/api/juridico/resumir-contrato/route.js",
+  "/dashboard/financeiro/page": "app/dashboard/financeiro/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/juridico/[id]/page": "app/juridico/[id]/page.js",
+  "/juridico/arquivos/page": "app/juridico/arquivos/page.js",
+  "/juridico/nova/page": "app/juridico/nova/page.js",
+  "/juridico/page": "app/juridico/page.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js"
+}

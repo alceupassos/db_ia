@@ -5,11 +5,14 @@ import {
   getDemandaById, 
   updateDemanda, 
   getArquivosByDemanda, 
-  vincularArquivo,
+  uploadArquivo,
   deleteDemanda,
+  updateDemandaField,
+  updateArquivo,
+  deleteArquivoComStorage,
   type DemandaJuridica
 } from '@/app/actions/juridico';
-import { GoogleDrivePicker, FileList } from '@/components/google-drive-picker';
+import { FileUpload } from '@/components/file-upload';
 import { AISummaryButton } from '@/components/ai-summary-button';
 import { AISearch } from '@/components/ai-search';
 import { 
@@ -18,7 +21,8 @@ import {
   Edit, 
   Trash2, 
   FileText,
-  Loader2
+  Loader2,
+  Download
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
@@ -26,7 +30,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { EditableRow } from '@/components/editable-row';
 import {
   Dialog,
   DialogContent,
@@ -94,19 +98,11 @@ export default function DemandaDetailPage() {
     }
   };
 
-  const handleFileSelect = async (file: { name: string; mimeType: string; id: string; url: string }) => {
-    try {
-      await vincularArquivo(demandaId, {
-        nome: file.name,
-        tipo: file.mimeType,
-        google_drive_id: file.id,
-        google_drive_url: file.url,
-        mime_type: file.mimeType
-      });
-      loadData();
-    } catch (error: unknown) {
-      alert('Erro ao vincular arquivo: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
-    }
+  const handleUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    await uploadArquivo(demandaId, formData);
+    loadData();
   };
 
   const getStatusBadge = (status: string) => {
@@ -227,71 +223,137 @@ export default function DemandaDetailPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label className="text-muted-foreground">Cliente</Label>
-                  <p className="font-medium">{demanda.cliente_nome}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Responsável</Label>
-                  <p className="font-medium">{demanda.responsavel}</p>
-                </div>
-                {demanda.data_solicitacao && (
-                  <div>
-                    <Label className="text-muted-foreground">Data de Solicitação</Label>
-                    <p className="font-medium">
-                      {new Date(demanda.data_solicitacao).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-                )}
-                {demanda.prazo && (
-                  <div>
-                    <Label className="text-muted-foreground">Prazo</Label>
-                    <p className="font-medium">
-                      {new Date(demanda.prazo).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-                )}
-                {demanda.data_entrega && (
-                  <div>
-                    <Label className="text-muted-foreground">Data de Entrega</Label>
-                    <p className="font-medium">
-                      {new Date(demanda.data_entrega).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-                )}
+                <EditableRow
+                  label="Cliente"
+                  value={demanda.cliente_nome}
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'cliente_nome', value);
+                    await loadData();
+                  }}
+                />
+                <EditableRow
+                  label="Responsável"
+                  value={demanda.responsavel}
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'responsavel', value);
+                    await loadData();
+                  }}
+                />
+                <EditableRow
+                  label="Data de Solicitação"
+                  value={demanda.data_solicitacao}
+                  type="date"
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'data_solicitacao', value || null);
+                    await loadData();
+                  }}
+                />
+                <EditableRow
+                  label="Prazo"
+                  value={demanda.prazo}
+                  type="date"
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'prazo', value || null);
+                    await loadData();
+                  }}
+                />
+                <EditableRow
+                  label="Data de Entrega"
+                  value={demanda.data_entrega}
+                  type="date"
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'data_entrega', value || null);
+                    await loadData();
+                  }}
+                />
+                <EditableRow
+                  label="Data de Pagamento"
+                  value={demanda.data_pagamento}
+                  type="date"
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'data_pagamento', value || null);
+                    await loadData();
+                  }}
+                />
+                <EditableRow
+                  label="Data Fim de Contrato"
+                  value={demanda.data_fim_contrato}
+                  type="date"
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'data_fim_contrato', value || null);
+                    await loadData();
+                  }}
+                />
               </div>
 
-              {demanda.observacoes && (
-                <div className="pt-4 border-t">
-                  <Label className="text-muted-foreground">Observações</Label>
-                  <p className="mt-2 text-sm whitespace-pre-wrap">{demanda.observacoes}</p>
-                </div>
-              )}
+              <div className="pt-4 border-t">
+                <EditableRow
+                  label="Observações"
+                  value={demanda.observacoes}
+                  type="textarea"
+                  onSave={async (value) => {
+                    await updateDemandaField(demandaId, 'observacoes', value || null);
+                    await loadData();
+                  }}
+                />
+              </div>
             </CardContent>
           </Card>
 
           {/* Arquivos */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Arquivos
-                </CardTitle>
-                <GoogleDrivePicker onFileSelect={handleFileSelect} />
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Arquivos
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              <FileUpload onUpload={handleUpload} maxSize={10} />
+              
               {arquivos.length > 0 ? (
-                <FileList files={arquivos.map(a => ({
-                  id: String(a.id || ''),
-                  nome: String(a.nome || ''),
-                  google_drive_url: a.google_drive_url ? String(a.google_drive_url) : undefined,
-                  tipo: a.tipo ? String(a.tipo) : undefined
-                }))} />
+                <div className="space-y-2 mt-4">
+                  {arquivos.map((arquivo) => (
+                    <div key={String(arquivo.id || '')} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <EditableRow
+                          label=""
+                          value={String(arquivo.nome || '')}
+                          onSave={async (value) => {
+                            await updateArquivo(String(arquivo.id || ''), { nome: value });
+                            await loadData();
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {typeof arquivo.storage_url === 'string' && arquivo.storage_url && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => window.open(String(arquivo.storage_url), '_blank')}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={async () => {
+                            if (confirm('Tem certeza que deseja excluir este arquivo?')) {
+                              await deleteArquivoComStorage(String(arquivo.id || ''));
+                              await loadData();
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Nenhum arquivo vinculado
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Arraste arquivos para a área acima para fazer upload
                 </p>
               )}
             </CardContent>
@@ -318,7 +380,7 @@ export default function DemandaDetailPage() {
                 <AISummaryButton
                   arquivoId={String(arquivo.id || '')}
                   arquivoNome={String(arquivo.nome || '')}
-                  googleDriveUrl={arquivo.google_drive_url ? String(arquivo.google_drive_url) : undefined}
+                  storageUrl={arquivo.storage_url ? String(arquivo.storage_url) : undefined}
                 />
                 {(() => {
                   const resumo = arquivo.resumo_ia;
