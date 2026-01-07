@@ -27,7 +27,13 @@ tar -czf deploy.tar.gz \
     next.config.ts \
     Dockerfile \
     docker-compose.prod.yml \
-    --exclude='.next/cache'
+    --exclude='.next/cache' 2>/dev/null || \
+tar -czf deploy.tar.gz \
+    .next \
+    public \
+    package.json \
+    package-lock.json \
+    next.config.ts
 
 # 3. Copy to VPS
 echo "📤 Enviando arquivos para VPS..."
