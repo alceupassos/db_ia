@@ -23,6 +23,31 @@ export function FileUpload({
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const processFile = useCallback(async (file: File) => {
+    // Verificar tamanho
+    if (file.size > maxSize * 1024 * 1024) {
+      setError(`Arquivo muito grande. Máximo: ${maxSize}MB`);
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+    try {
+      await onUpload(file);
+      // Após upload, iniciar estado de análise
+      setUploading(false);
+      setAnalyzing(true);
+      // Resetar estado de análise após 3 segundos (análise acontece em background)
+      setTimeout(() => {
+        setAnalyzing(false);
+      }, 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao fazer upload');
+      setUploading(false);
+      setAnalyzing(false);
+    }
+  }, [maxSize, onUpload]);
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -50,7 +75,7 @@ export function FileUpload({
 
     const file = files[0];
     await processFile(file);
-  }, [disabled, maxSize, onUpload]);
+  }, [disabled, processFile]);
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
@@ -62,32 +87,7 @@ export function FileUpload({
     
     // Reset input
     e.target.value = '';
-  }, [maxSize, onUpload]);
-
-  const processFile = async (file: File) => {
-    // Verificar tamanho
-    if (file.size > maxSize * 1024 * 1024) {
-      setError(`Arquivo muito grande. Máximo: ${maxSize}MB`);
-      return;
-    }
-
-    setUploading(true);
-    setError(null);
-    try {
-      await onUpload(file);
-      // Após upload, iniciar estado de análise
-      setUploading(false);
-      setAnalyzing(true);
-      // Resetar estado de análise após 3 segundos (análise acontece em background)
-      setTimeout(() => {
-        setAnalyzing(false);
-      }, 3000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer upload');
-      setUploading(false);
-      setAnalyzing(false);
-    }
-  };
+  }, [processFile]);
 
   return (
     <div className="w-full">

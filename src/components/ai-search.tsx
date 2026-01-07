@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 interface AISearchProps {
-  onSearch: (query: string, results: any[]) => void;
+  onSearch: (query: string, results: unknown[]) => void;
   demandaId?: string;
 }
 
@@ -38,7 +38,7 @@ export function AISearch({ onSearch, demandaId }: AISearchProps) {
 
       const data = await response.json();
       onSearch(query, data.results || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro na busca:', error);
     } finally {
       setLoading(false);
