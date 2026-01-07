@@ -1,6 +1,7 @@
 {
   "/_global-error/page": "/_global-error",
   "/_not-found/page": "/_not-found",
+  "/api/juridico/analisar-arquivo/route": "/api/juridico/analisar-arquivo",
   "/api/juridico/buscar-semantica/route": "/api/juridico/buscar-semantica",
   "/api/juridico/chat/route": "/api/juridico/chat",
   "/api/juridico/file-chat/route": "/api/juridico/file-chat",

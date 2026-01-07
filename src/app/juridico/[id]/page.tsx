@@ -314,40 +314,60 @@ export default function DemandaDetailPage() {
               {arquivos.length > 0 ? (
                 <div className="space-y-2 mt-4">
                   {arquivos.map((arquivo) => (
-                    <div key={String(arquivo.id || '')} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex-1">
-                        <EditableRow
-                          label=""
-                          value={String(arquivo.nome || '')}
-                          onSave={async (value) => {
-                            await updateArquivo(String(arquivo.id || ''), { nome: value });
-                            await loadData();
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {typeof arquivo.storage_url === 'string' && arquivo.storage_url && (
+                    <div key={String(arquivo.id || '')} className="flex flex-col gap-2 p-3 border rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <EditableRow
+                            label=""
+                            value={String(arquivo.nome || '')}
+                            onSave={async (value) => {
+                              await updateArquivo(String(arquivo.id || ''), { nome: value });
+                              await loadData();
+                            }}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {typeof arquivo.storage_url === 'string' && arquivo.storage_url && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => window.open(String(arquivo.storage_url), '_blank')}
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => window.open(String(arquivo.storage_url), '_blank')}
+                            onClick={async () => {
+                              if (confirm('Tem certeza que deseja excluir este arquivo?')) {
+                                await deleteArquivoComStorage(String(arquivo.id || ''));
+                                await loadData();
+                              }
+                            }}
                           >
-                            <Download className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={async () => {
-                            if (confirm('Tem certeza que deseja excluir este arquivo?')) {
-                              await deleteArquivoComStorage(String(arquivo.id || ''));
-                              await loadData();
-                            }
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        </div>
                       </div>
+                      {(() => {
+                        const categoria = typeof arquivo.categoria === 'string' ? arquivo.categoria : null;
+                        const descricao = typeof arquivo.descricao_ia === 'string' ? arquivo.descricao_ia : null;
+                        return (
+                          <>
+                            {categoria && (
+                              <Badge variant="default" className="w-fit">
+                                {categoria}
+                              </Badge>
+                            )}
+                            {descricao && (
+                              <p className="text-xs text-muted-foreground line-clamp-2">
+                                {descricao}
+                              </p>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   ))}
                 </div>

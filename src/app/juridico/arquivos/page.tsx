@@ -51,6 +51,8 @@ interface ArquivoComDemanda {
   storage_url: string | null;
   mime_type: string | null;
   resumo_ia: string | null;
+  categoria: string | null;
+  descricao_ia: string | null;
   demanda_id: string;
   demanda_nome?: string;
   created_at: string;
@@ -63,6 +65,7 @@ export default function ArquivosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDemanda, setFilterDemanda] = useState<string>('all');
   const [filterTipo, setFilterTipo] = useState<string>('all');
+  const [filterCategoria, setFilterCategoria] = useState<string>('all');
   const [selectedArquivo, setSelectedArquivo] = useState<ArquivoComDemanda | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -87,6 +90,8 @@ export default function ArquivosPage() {
             storage_url: arq.storage_url ? String(arq.storage_url) : null,
             mime_type: arq.mime_type ? String(arq.mime_type) : null,
             resumo_ia: arq.resumo_ia ? String(arq.resumo_ia) : null,
+            categoria: arq.categoria ? String(arq.categoria) : null,
+            descricao_ia: arq.descricao_ia ? String(arq.descricao_ia) : null,
             demanda_id: demanda.id,
             demanda_nome: demanda.demanda,
             created_at: String(arq.created_at || ''),
@@ -136,15 +141,19 @@ export default function ArquivosPage() {
     return <FileIcon className="h-5 w-5" />;
   };
 
+  const categorias = Array.from(new Set(arquivos.map(a => a.categoria).filter((c): c is string => typeof c === 'string' && c.length > 0))).sort();
+
   const filteredArquivos = arquivos.filter(arq => {
     const matchesSearch = arq.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      arq.demanda_nome?.toLowerCase().includes(searchTerm.toLowerCase());
+      arq.demanda_nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      arq.descricao_ia?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDemanda = filterDemanda === 'all' || arq.demanda_id === filterDemanda;
     const matchesTipo = filterTipo === 'all' || 
       (filterTipo === 'pdf' && arq.mime_type?.includes('pdf')) ||
       (filterTipo === 'image' && arq.mime_type?.includes('image')) ||
       (filterTipo === 'doc' && (arq.mime_type?.includes('word') || arq.mime_type?.includes('document')));
-    return matchesSearch && matchesDemanda && matchesTipo;
+    const matchesCategoria = filterCategoria === 'all' || arq.categoria === filterCategoria;
+    return matchesSearch && matchesDemanda && matchesTipo && matchesCategoria;
   });
 
   return (
@@ -228,6 +237,19 @@ export default function ArquivosPage() {
                 <SelectItem value="doc">Documentos</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={filterCategoria} onValueChange={setFilterCategoria}>
+              <SelectTrigger className="w-full md:w-[150px]">
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as categorias</SelectItem>
+                {categorias.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -263,15 +285,27 @@ export default function ArquivosPage() {
                     <p className="text-xs text-muted-foreground truncate">
                       {arquivo.demanda_nome}
                     </p>
-                    {arquivo.tipo && (
-                      <Badge variant="outline" className="mt-2 text-xs">
-                        {arquivo.tipo}
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                      {arquivo.categoria && (
+                        <Badge variant="default" className="text-xs">
+                          {arquivo.categoria}
+                        </Badge>
+                      )}
+                      {arquivo.tipo && (
+                        <Badge variant="outline" className="text-xs">
+                          {arquivo.tipo}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {arquivo.resumo_ia && (
+                {arquivo.descricao_ia && (
+                  <p className="text-xs text-muted-foreground mt-3 line-clamp-2" title={arquivo.descricao_ia}>
+                    {arquivo.descricao_ia}
+                  </p>
+                )}
+                {arquivo.resumo_ia && !arquivo.descricao_ia && (
                   <p className="text-xs text-muted-foreground mt-3 line-clamp-2">
                     {arquivo.resumo_ia}
                   </p>

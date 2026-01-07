@@ -56,6 +56,12 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/api/juridico/analisar-arquivo",
+      "regex": "^/api/juridico/analisar\\-arquivo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/juridico/analisar\\-arquivo(?:/)?$"
+    },
+    {
       "page": "/api/juridico/buscar-semantica",
       "regex": "^/api/juridico/buscar\\-semantica(?:/)?$",
       "routeKeys": {},

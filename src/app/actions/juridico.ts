@@ -246,6 +246,35 @@ export async function uploadArquivo(demandaId: string, formData: FormData) {
     .single();
 
   if (error) throw error;
+
+  // Analisar arquivo com IA automaticamente (em background, não bloqueia)
+  try {
+    // Em server action, podemos fazer chamada HTTP interna
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` :
+                    'http://localhost:3000';
+    
+    const response = await fetch(`${baseUrl}/api/juridico/analisar-arquivo`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        arquivoId: data.id,
+        arquivoNome: file.name,
+        storageUrl: urlData.publicUrl,
+        mimeType: file.type,
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn('Análise de arquivo retornou erro:', response.status);
+    }
+  } catch (analysisError) {
+    // Não falha o upload se a análise der erro
+    console.error('Erro ao analisar arquivo com IA:', analysisError);
+  }
+
   return data;
 }
 

@@ -20,6 +20,7 @@ export function FileUpload({
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -71,12 +72,20 @@ export function FileUpload({
     }
 
     setUploading(true);
+    setError(null);
     try {
       await onUpload(file);
+      // Após upload, iniciar estado de análise
+      setUploading(false);
+      setAnalyzing(true);
+      // Resetar estado de análise após 3 segundos (análise acontece em background)
+      setTimeout(() => {
+        setAnalyzing(false);
+      }, 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao fazer upload');
-    } finally {
       setUploading(false);
+      setAnalyzing(false);
     }
   };
 
@@ -92,13 +101,19 @@ export function FileUpload({
             ? "border-primary bg-primary/5" 
             : "border-border hover:border-primary/50",
           disabled && "opacity-50 cursor-not-allowed",
-          uploading && "pointer-events-none"
+          (uploading || analyzing) && "pointer-events-none"
         )}
       >
         {uploading ? (
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground">Enviando arquivo...</p>
+          </div>
+        ) : analyzing ? (
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="text-sm font-medium text-primary">Analisando documento com IA...</p>
+            <p className="text-xs text-muted-foreground">Categorizando e gerando descrição</p>
           </div>
         ) : (
           <>
