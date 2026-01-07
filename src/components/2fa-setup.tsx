@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Shield, Smartphone, Key, CheckCircle, Alert } from 'lucide-react';
+import { Shield, Smartphone, Key, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Alert as AlertComponent, AlertDescription } from '@/components/ui/alert';
+// Alert component - usar Card temporariamente
 import { Card, CardContent } from '@/components/ui/card';
 
 export function TwoFactorSetup() {
@@ -83,9 +83,9 @@ export function TwoFactorSetup() {
                 </p>
               </div>
               {error && (
-                <AlertComponent variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </AlertComponent>
+                <div className="p-3 bg-red-500/10 text-red-500 rounded text-sm">
+                  {error}
+                </div>
               )}
               <Button onClick={initSetup} className="w-full" disabled={loading}>
                 <Smartphone className="h-4 w-4 mr-2" />
@@ -139,9 +139,9 @@ export function TwoFactorSetup() {
                 </Button>
               </div>
               {error && (
-                <AlertComponent variant="destructive" className="mt-2">
-                  <AlertDescription>{error}</AlertDescription>
-                </AlertComponent>
+                <div className="p-3 bg-red-500/10 text-red-500 rounded text-sm mt-2">
+                  {error}
+                </div>
               )}
             </div>
           </CardContent>
@@ -158,13 +158,16 @@ export function TwoFactorSetup() {
               <h2 className="text-xl font-bold mb-2">2FA Ativado!</h2>
             </div>
             
-            <AlertComponent>
-              <Key className="h-4 w-4" />
-              <AlertDescription>
-                Guarde estes códigos de backup em lugar seguro. 
-                Use-os caso perca acesso ao seu celular.
-              </AlertDescription>
-            </AlertComponent>
+            <div className="p-4 bg-yellow-500/10 text-yellow-500 rounded-lg flex items-start gap-3">
+              <Key className="h-4 w-4 mt-0.5" />
+              <div>
+                <p className="font-medium mb-1">Importante!</p>
+                <p className="text-sm">
+                  Guarde estes códigos de backup em lugar seguro. 
+                  Use-os caso perca acesso ao seu celular.
+                </p>
+              </div>
+            </div>
             
             <div className="grid grid-cols-2 gap-2">
               {backupCodes.map((code, i) => (

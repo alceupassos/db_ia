@@ -7,8 +7,15 @@ import { Plus, Users } from 'lucide-react';
 import { SkeletonTable } from '@/components/skeleton-loader';
 import { EmptyState } from '@/components/empty-state';
 
+interface Contato {
+  id: string;
+  nome: string;
+  telefone: string;
+  tipo: string;
+}
+
 export default function WhatsAppContatosPage() {
-  const [contatos, setContatos] = useState([]);
+  const [contatos, setContatos] = useState<Contato[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +26,7 @@ export default function WhatsAppContatosPage() {
     try {
       const response = await fetch('/api/whatsapp/contacts');
       const data = await response.json();
-      setContatos(data || []);
+      setContatos((data as Contato[]) || []);
     } catch (error) {
       console.error('Error loading contatos:', error);
     } finally {
@@ -71,7 +78,7 @@ export default function WhatsAppContatosPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {contatos.map((contato: any) => (
+                  {contatos.map((contato) => (
                     <tr key={contato.id} className="border-b">
                       <td className="p-4">{contato.nome}</td>
                       <td className="p-4 font-mono">{contato.telefone}</td>

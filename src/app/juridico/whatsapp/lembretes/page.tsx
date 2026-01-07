@@ -8,8 +8,15 @@ import { SkeletonTable } from '@/components/skeleton-loader';
 import { EmptyState } from '@/components/empty-state';
 import { supabase } from '@/lib/supabase-client';
 
+interface Lembrete {
+  id: string;
+  mensagem: string;
+  data_envio: string;
+  status: string;
+}
+
 export default function WhatsAppLembretesPage() {
-  const [lembretes, setLembretes] = useState([]);
+  const [lembretes, setLembretes] = useState<Lembrete[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +29,7 @@ export default function WhatsAppLembretesPage() {
         .from('whatsapp_reminders')
         .select('*')
         .order('data_envio', { ascending: false });
-      setLembretes(data || []);
+      setLembretes((data as Lembrete[]) || []);
     } catch (error) {
       console.error('Error loading lembretes:', error);
     } finally {
@@ -64,7 +71,7 @@ export default function WhatsAppLembretesPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {lembretes.map((lembrete: any) => (
+              {lembretes.map((lembrete) => (
                 <div key={lembrete.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>

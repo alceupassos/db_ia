@@ -239,9 +239,9 @@ export function Signature2FAVerify({
         )}
 
         {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
+          <div className="p-3 bg-red-500/10 text-red-500 rounded text-sm">
+            {error}
+          </div>
         )}
 
         <DialogFooter>

@@ -2,18 +2,13 @@
 
 import { useAuth } from '@/components/auth-provider';
 import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase-client';
 
 interface PermissionGuardProps {
   children: React.ReactNode;
   permission: string;
   fallback?: React.ReactNode;
 }
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export function PermissionGuard({ 
   children, 
