@@ -32,6 +32,7 @@ import {
   Pencil,
   Trash2
 } from 'lucide-react';
+import { ExportButton } from '@/components/export-button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -143,12 +144,15 @@ export default function JuridicoDashboard() {
             Visão geral das demandas jurídicas
           </p>
         </div>
-        <Link href="/juridico/nova">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Demanda
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ExportButton />
+          <Link href="/juridico/nova">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Demanda
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* KPI Cards */}

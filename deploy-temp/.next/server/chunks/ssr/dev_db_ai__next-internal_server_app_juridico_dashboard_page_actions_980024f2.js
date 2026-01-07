@@ -1,0 +1,3 @@
+module.exports=[8431,a=>{"use strict";var b=a.i(53980);a.s([],88768),a.i(88768),a.s(["000bff369587377a3d73106c7a3ebf037e7bb77407",()=>b.getDemandasPorCliente,"0049fa431e9e9bc33c34dbce28cd1da51b2e19f87c",()=>b.getArquivosPorCategoria,"008c67a34b93be7aa0521a8693a859ec5059b72495",()=>b.getKPIs,"009dca060ae44a63532f34ca8f39623413b9cdef26",()=>b.getEvolucaoMensal,"00a2bbec07e1f0018a16836a6f409fbd26d68d9481",()=>b.getDemandasPorStatus,"40424572f1d0da9b7a6de176f7add38d4a626c413b",()=>b.getTimelineAtividades],8431)}];
+
+//# sourceMappingURL=dev_db_ai__next-internal_server_app_juridico_dashboard_page_actions_980024f2.js.map

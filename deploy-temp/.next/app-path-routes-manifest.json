@@ -5,13 +5,18 @@
   "/api/juridico/buscar-semantica/route": "/api/juridico/buscar-semantica",
   "/api/juridico/chat/route": "/api/juridico/chat",
   "/api/juridico/file-chat/route": "/api/juridico/file-chat",
+  "/api/juridico/notificacoes/route": "/api/juridico/notificacoes",
+  "/api/juridico/relatorios/route": "/api/juridico/relatorios",
   "/api/juridico/resumir-contrato/route": "/api/juridico/resumir-contrato",
+  "/api/juridico/send-email/route": "/api/juridico/send-email",
   "/dashboard/financeiro/page": "/dashboard/financeiro",
   "/favicon.ico/route": "/favicon.ico",
   "/juridico/[id]/page": "/juridico/[id]",
   "/juridico/arquivos/page": "/juridico/arquivos",
+  "/juridico/dashboard/page": "/juridico/dashboard",
   "/juridico/nova/page": "/juridico/nova",
   "/juridico/page": "/juridico",
+  "/juridico/relatorios/page": "/juridico/relatorios",
   "/login/page": "/login",
   "/page": "/"
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Bell } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/components/auth-provider';
-import { Badge } from '@/components/ui/badge';
+import { NotificacoesBadge } from '@/components/notificacoes-badge';
 
 export function Header() {
   const { user } = useAuth();
@@ -43,15 +43,7 @@ export function Header() {
       {/* Right Section */}
       <div className="flex items-center gap-4">
         {/* Notifications */}
-        <button className="relative rounded-lg p-2 hover:bg-accent">
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          <Badge
-            variant="destructive"
-            className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs"
-          >
-            3
-          </Badge>
-        </button>
+        <NotificacoesBadge />
 
         {/* User Menu */}
         <DropdownMenu>

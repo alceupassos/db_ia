@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/juridico/layout,_N_T_/juridico/relatorios/layout,_N_T_/juridico/relatorios/page,_N_T_/juridico/relatorios"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/juridico/relatorios/__PAGE__",
+    "/juridico/relatorios",
+    "/juridico",
+    "/_index",
+    "/_head"
+  ]
+}

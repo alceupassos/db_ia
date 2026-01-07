@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/collapsible';
 
 const juridicoSubItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/juridico' },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/juridico/dashboard' },
   { icon: FileText, label: 'Demandas', href: '/juridico' },
   { icon: FolderOpen, label: 'Arquivos', href: '/juridico/arquivos' },
   { icon: BarChart3, label: 'Relatórios', href: '/juridico/relatorios' },

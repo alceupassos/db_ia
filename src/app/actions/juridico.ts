@@ -304,3 +304,255 @@ export async function deleteArquivoComStorage(arquivoId: string) {
 
   if (error) throw error;
 }
+
+// Analytics functions
+export async function getDemandasPorStatus() {
+  const { data, error } = await supabase
+    .from('demandas_juridicas')
+    .select('status');
+  
+  if (error) throw error;
+  
+  const statusCount = {
+    'PENDENTE': 0,
+    'EM ANDAMENTO': 0,
+    'CONCLUÍDO': 0,
+    'Cancelado': 0
+  };
+  
+  data?.forEach(d => {
+    if (d.status in statusCount) {
+      statusCount[d.status as keyof typeof statusCount]++;
+    }
+  });
+  
+  return Object.entries(statusCount).map(([status, count]) => ({
+    status,
+    count
+  }));
+}
+
+export async function getDemandasPorCliente() {
+  const { data, error } = await supabase
+    .from('demandas_juridicas')
+    .select('cliente_nome');
+  
+  if (error) throw error;
+  
+  const clienteCount: Record<string, number> = {};
+  data?.forEach(d => {
+    const cliente = d.cliente_nome || 'Sem cliente';
+    clienteCount[cliente] = (clienteCount[cliente] || 0) + 1;
+  });
+  
+  return Object.entries(clienteCount)
+    .map(([cliente, count]) => ({ cliente, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+}
+
+export async function getArquivosPorCategoria() {
+  const { data, error } = await supabase
+    .from('arquivos_demanda')
+    .select('categoria');
+  
+  if (error) throw error;
+  
+  const categoriaCount: Record<string, number> = {};
+  data?.forEach(a => {
+    const categoria = a.categoria || 'Sem categoria';
+    categoriaCount[categoria] = (categoriaCount[categoria] || 0) + 1;
+  });
+  
+  return Object.entries(categoriaCount)
+    .map(([categoria, count]) => ({ categoria, count }));
+}
+
+export async function getEvolucaoMensal() {
+  const { data, error } = await supabase
+    .from('demandas_juridicas')
+    .select('created_at, status')
+    .order('created_at', { ascending: true });
+  
+  if (error) throw error;
+  
+  const monthlyData: Record<string, { criadas: number; concluidas: number }> = {};
+  
+  data?.forEach(d => {
+    if (!d.created_at) return;
+    const date = new Date(d.created_at);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    
+    if (!monthlyData[monthKey]) {
+      monthlyData[monthKey] = { criadas: 0, concluidas: 0 };
+    }
+    
+    monthlyData[monthKey].criadas++;
+    if (d.status === 'CONCLUÍDO') {
+      monthlyData[monthKey].concluidas++;
+    }
+  });
+  
+  return Object.entries(monthlyData)
+    .map(([mes, valores]) => ({
+      mes,
+      ...valores
+    }))
+    .slice(-12);
+}
+
+export async function getTimelineAtividades(limit = 20) {
+  const { data, error } = await supabase
+    .from('demandas_juridicas')
+    .select('id, demanda, status, created_at, updated_at, cliente_nome')
+    .order('updated_at', { ascending: false })
+    .limit(limit);
+  
+  if (error) throw error;
+  
+  return data?.map(d => ({
+    id: d.id,
+    tipo: 'demanda' as const,
+    titulo: d.demanda,
+    cliente: d.cliente_nome,
+    status: d.status,
+    data: d.updated_at || d.created_at,
+    descricao: `Status: ${d.status}`
+  })) || [];
+}
+
+export async function getNotificacoesPrazos() {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  
+  const { data: demandas, error } = await supabase
+    .from('demandas_juridicas')
+    .select('id, demanda, cliente_nome, prazo, data_entrega, data_fim_contrato, data_pagamento')
+    .or(`prazo.is.not.null,data_entrega.is.not.null,data_fim_contrato.is.not.null,data_pagamento.is.not.null`);
+  
+  if (error) throw error;
+  
+  const notificacoes: Array<{
+    id: string;
+    tipo: 'prazo' | 'entrega' | 'fim_contrato' | 'pagamento';
+    titulo: string;
+    descricao: string;
+    data: string;
+    diasRestantes: number;
+    urgencia: 'baixa' | 'media' | 'alta';
+  }> = [];
+  
+  demandas?.forEach(d => {
+    const checkDate = (campo: 'prazo' | 'data_entrega' | 'data_fim_contrato' | 'data_pagamento', tipo: typeof notificacoes[0]['tipo'], label: string) => {
+      const data = d[campo];
+      if (!data) return;
+      
+      const dataObj = new Date(data);
+      dataObj.setHours(0, 0, 0, 0);
+      
+      if (dataObj >= hoje) {
+        const diffTime = dataObj.getTime() - hoje.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays <= 7) {
+          let urgencia: 'baixa' | 'media' | 'alta' = 'baixa';
+          if (diffDays <= 1) urgencia = 'alta';
+          else if (diffDays <= 3) urgencia = 'media';
+          
+          notificacoes.push({
+            id: `${d.id}-${campo}`,
+            tipo,
+            titulo: `${label}: ${d.demanda}`,
+            descricao: `Cliente: ${d.cliente_nome}`,
+            data: data,
+            diasRestantes: diffDays,
+            urgencia
+          });
+        }
+      }
+    };
+    
+    checkDate('prazo', 'prazo', 'Prazo');
+    checkDate('data_entrega', 'entrega', 'Data de Entrega');
+    checkDate('data_fim_contrato', 'fim_contrato', 'Fim de Contrato');
+    checkDate('data_pagamento', 'pagamento', 'Data de Pagamento');
+  });
+  
+  return notificacoes.sort((a, b) => a.diasRestantes - b.diasRestantes);
+}
+
+// Workflow functions
+export async function aprovarArquivo(
+  arquivoId: string, 
+  status: 'APROVADO' | 'REJEITADO',
+  comentario?: string,
+  userId?: string
+) {
+  const { data: arquivo } = await supabase
+    .from('arquivos_demanda')
+    .select('status_aprovacao')
+    .eq('id', arquivoId)
+    .single();
+
+  const statusAnterior = arquivo?.status_aprovacao || 'RASCUNHO';
+
+  const { data: updated, error } = await supabase
+    .from('arquivos_demanda')
+    .update({
+      status_aprovacao: status,
+      aprovado_por: userId || null,
+      aprovado_em: new Date().toISOString(),
+      comentarios_aprovacao: comentario || null,
+    })
+    .eq('id', arquivoId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  await supabase
+    .from('historico_aprovacoes')
+    .insert({
+      arquivo_id: arquivoId,
+      status_anterior: statusAnterior,
+      status_novo: status,
+      comentario: comentario || null,
+      aprovado_por: userId || null,
+    });
+
+  return updated;
+}
+
+export async function enviarParaRevisao(arquivoId: string) {
+  const { data, error } = await supabase
+    .from('arquivos_demanda')
+    .update({
+      status_aprovacao: 'EM_REVISAO',
+    })
+    .eq('id', arquivoId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  await supabase
+    .from('historico_aprovacoes')
+    .insert({
+      arquivo_id: arquivoId,
+      status_anterior: 'RASCUNHO',
+      status_novo: 'EM_REVISAO',
+    });
+
+  return data;
+}
+
+export async function getHistoricoAprovacao(arquivoId: string) {
+  const { data, error } = await supabase
+    .from('historico_aprovacoes')
+    .select('*')
+    .eq('arquivo_id', arquivoId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}

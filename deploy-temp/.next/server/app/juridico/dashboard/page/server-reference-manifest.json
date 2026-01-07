@@ -1,0 +1,95 @@
+{
+  "node": {
+    "00a2bbec07e1f0018a16836a6f409fbd26d68d9481": {
+      "workers": {
+        "app/juridico/dashboard/page": {
+          "moduleId": 8431,
+          "async": false,
+          "exportedName": "getDemandasPorStatus",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/dashboard/page": "action-browser"
+      },
+      "exportedName": "getDemandasPorStatus",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "000bff369587377a3d73106c7a3ebf037e7bb77407": {
+      "workers": {
+        "app/juridico/dashboard/page": {
+          "moduleId": 8431,
+          "async": false,
+          "exportedName": "getDemandasPorCliente",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/dashboard/page": "action-browser"
+      },
+      "exportedName": "getDemandasPorCliente",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "0049fa431e9e9bc33c34dbce28cd1da51b2e19f87c": {
+      "workers": {
+        "app/juridico/dashboard/page": {
+          "moduleId": 8431,
+          "async": false,
+          "exportedName": "getArquivosPorCategoria",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/dashboard/page": "action-browser"
+      },
+      "exportedName": "getArquivosPorCategoria",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "009dca060ae44a63532f34ca8f39623413b9cdef26": {
+      "workers": {
+        "app/juridico/dashboard/page": {
+          "moduleId": 8431,
+          "async": false,
+          "exportedName": "getEvolucaoMensal",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/dashboard/page": "action-browser"
+      },
+      "exportedName": "getEvolucaoMensal",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "40424572f1d0da9b7a6de176f7add38d4a626c413b": {
+      "workers": {
+        "app/juridico/dashboard/page": {
+          "moduleId": 8431,
+          "async": false,
+          "exportedName": "getTimelineAtividades",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/dashboard/page": "action-browser"
+      },
+      "exportedName": "getTimelineAtividades",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    },
+    "008c67a34b93be7aa0521a8693a859ec5059b72495": {
+      "workers": {
+        "app/juridico/dashboard/page": {
+          "moduleId": 8431,
+          "async": false,
+          "exportedName": "getKPIs",
+          "filename": "dev/db_ai/src/app/actions/juridico.ts"
+        }
+      },
+      "layer": {
+        "app/juridico/dashboard/page": "action-browser"
+      },
+      "exportedName": "getKPIs",
+      "filename": "dev/db_ai/src/app/actions/juridico.ts"
+    }
+  },
+  "edge": {}
+}

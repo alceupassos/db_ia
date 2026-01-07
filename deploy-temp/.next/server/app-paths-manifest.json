@@ -5,13 +5,18 @@
   "/api/juridico/buscar-semantica/route": "app/api/juridico/buscar-semantica/route.js",
   "/api/juridico/chat/route": "app/api/juridico/chat/route.js",
   "/api/juridico/file-chat/route": "app/api/juridico/file-chat/route.js",
+  "/api/juridico/notificacoes/route": "app/api/juridico/notificacoes/route.js",
+  "/api/juridico/relatorios/route": "app/api/juridico/relatorios/route.js",
   "/api/juridico/resumir-contrato/route": "app/api/juridico/resumir-contrato/route.js",
+  "/api/juridico/send-email/route": "app/api/juridico/send-email/route.js",
   "/dashboard/financeiro/page": "app/dashboard/financeiro/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/juridico/[id]/page": "app/juridico/[id]/page.js",
   "/juridico/arquivos/page": "app/juridico/arquivos/page.js",
+  "/juridico/dashboard/page": "app/juridico/dashboard/page.js",
   "/juridico/nova/page": "app/juridico/nova/page.js",
   "/juridico/page": "app/juridico/page.js",
+  "/juridico/relatorios/page": "app/juridico/relatorios/page.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js"
 }
