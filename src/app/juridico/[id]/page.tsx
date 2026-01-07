@@ -320,8 +320,8 @@ export default function DemandaDetailPage() {
                   arquivoNome={String(arquivo.nome || '')}
                   googleDriveUrl={arquivo.google_drive_url ? String(arquivo.google_drive_url) : undefined}
                 />
-                {arquivo.resumo_ia && (
-                  <p className="text-sm text-muted-foreground line-clamp-3">{String(arquivo.resumo_ia)}</p>
+                {arquivo.resumo_ia && typeof arquivo.resumo_ia === 'string' && (
+                  <p className="text-sm text-muted-foreground line-clamp-3">{arquivo.resumo_ia}</p>
                 )}
               </CardContent>
             </Card>
