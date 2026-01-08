@@ -428,9 +428,12 @@ export async function getNotificacoesPrazos() {
   const { data: demandas, error } = await supabase
     .from('demandas_juridicas')
     .select('id, demanda, cliente_nome, prazo, data_entrega, data_fim_contrato, data_pagamento')
-    .or(`prazo.is.not.null,data_entrega.is.not.null,data_fim_contrato.is.not.null,data_pagamento.is.not.null`);
+    .or('prazo.not.is.null,data_entrega.not.is.null,data_fim_contrato.not.is.null,data_pagamento.not.is.null');
   
-  if (error) throw error;
+  if (error) {
+    console.error('Erro ao buscar notificações:', error);
+    return [];
+  }
   
   const notificacoes: Array<{
     id: string;
@@ -555,4 +558,241 @@ export async function getHistoricoAprovacao(arquivoId: string) {
 
   if (error) throw error;
   return data;
+}
+
+// Pool de Arquivos - Funções para arquivos não vinculados
+export interface ArquivoPool {
+  id: string;
+  nome: string;
+  storage_url: string | null;
+  supabase_path: string | null;
+  mime_type: string | null;
+  tamanho: number | null;
+  categoria: string | null;
+  descricao_ia: string | null;
+  categoria_usuario: string | null;
+  resumo_ia: string | null;
+  status: 'aguardando_analise' | 'analisado' | 'vinculado';
+  demanda_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function uploadArquivoParaPool(formData: FormData) {
+  const file = formData.get('file') as File;
+  if (!file) throw new Error('Nenhum arquivo enviado');
+
+  const fileName = `pool/${Date.now()}-${file.name}`;
+  
+  // Upload para Supabase Storage
+  const { data: uploadData, error: uploadError } = await supabase
+    .storage
+    .from('arquivos-juridico')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+  if (uploadError) throw uploadError;
+
+  // Obter URL pública
+  const { data: urlData } = supabase
+    .storage
+    .from('arquivos-juridico')
+    .getPublicUrl(fileName);
+
+  // Salvar no pool com tratamento de erro robusto
+  try {
+    const { data, error } = await supabase
+      .from('arquivos_pool')
+      .insert({
+        nome: file.name,
+        tipo: file.type.split('/')[1]?.toUpperCase() || 'ARQUIVO',
+        mime_type: file.type,
+        tamanho: file.size,
+        supabase_path: uploadData.path,
+        storage_url: urlData.publicUrl,
+        status: 'aguardando_analise'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      // Verificar diferentes códigos de erro relacionados à tabela não existente
+      if (error.code === 'PGRST205' || error.code === '42P01' || error.message?.includes('does not exist')) {
+        throw new Error('Tabela arquivos_pool não encontrada. Execute a migration 014_arquivos_pool.sql no Supabase.');
+      }
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error('Falha ao salvar arquivo no pool');
+    }
+
+    // Continuar com análise de IA se bem-sucedido
+    // Analisar arquivo com IA automaticamente
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` :
+                      'http://localhost:3000';
+      
+      const response = await fetch(`${baseUrl}/api/juridico/analisar-arquivo-pool`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          arquivoId: data.id,
+          arquivoNome: file.name,
+          storageUrl: urlData.publicUrl,
+          mimeType: file.type,
+        }),
+      });
+
+      if (!response.ok) {
+        console.warn('Análise de arquivo do pool retornou erro:', response.status);
+      }
+    } catch (analysisError) {
+      console.error('Erro ao analisar arquivo do pool com IA:', analysisError);
+      // Não falhar o upload se a análise falhar
+    }
+
+    return data;
+  } catch (poolError) {
+    // Se falhar ao salvar no pool, ainda retornar informações básicas
+    // para que o usuário possa tentar vincular manualmente
+    console.error('Erro ao salvar no pool, mas arquivo foi feito upload:', poolError);
+    throw poolError;
+  }
+}
+
+export async function getArquivosPool(filters?: {
+  status?: string;
+  categoria?: string;
+  search?: string;
+}) {
+  try {
+    let query = supabase
+      .from('arquivos_pool')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (filters?.status && filters.status !== 'all') {
+      query = query.eq('status', filters.status);
+    }
+
+    if (filters?.categoria && filters.categoria !== 'all') {
+      query = query.eq('categoria_usuario', filters.categoria).or(`categoria.eq.${filters.categoria}`);
+    }
+
+    if (filters?.search) {
+      query = query.or(`nome.ilike.%${filters.search}%,descricao_ia.ilike.%${filters.search}%`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      // Se a tabela não existe, retorna array vazio
+      if (error.code === 'PGRST205') {
+        console.warn('Tabela arquivos_pool não encontrada. Execute a migration 014_arquivos_pool.sql');
+        return [];
+      }
+      throw error;
+    }
+    return data as ArquivoPool[];
+  } catch (error) {
+    console.error('Erro ao buscar arquivos do pool:', error);
+    return [];
+  }
+}
+
+export async function atualizarArquivoPool(
+  arquivoId: string,
+  updates: {
+    categoria_usuario?: string;
+    descricao_ia?: string;
+    categoria?: string;
+  }
+) {
+  const { data, error } = await supabase
+    .from('arquivos_pool')
+    .update(updates)
+    .eq('id', arquivoId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as ArquivoPool;
+}
+
+export async function vincularArquivoPoolADemanda(
+  arquivoId: string,
+  demandaId: string
+) {
+  // Buscar arquivo do pool
+  const { data: arquivoPool, error: fetchError } = await supabase
+    .from('arquivos_pool')
+    .select('*')
+    .eq('id', arquivoId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  // Criar entrada em arquivos_demanda
+  const { data: arquivoDemanda, error: insertError } = await supabase
+    .from('arquivos_demanda')
+    .insert({
+      demanda_id: demandaId,
+      nome: arquivoPool.nome,
+      tipo: arquivoPool.mime_type?.split('/')[1]?.toUpperCase() || 'ARQUIVO',
+      tamanho: arquivoPool.tamanho,
+      supabase_path: arquivoPool.supabase_path,
+      mime_type: arquivoPool.mime_type,
+      storage_url: arquivoPool.storage_url,
+      categoria: arquivoPool.categoria_usuario || arquivoPool.categoria,
+      descricao_ia: arquivoPool.descricao_ia,
+      resumo_ia: arquivoPool.resumo_ia || arquivoPool.descricao_ia
+    })
+    .select()
+    .single();
+
+  if (insertError) throw insertError;
+
+  // Atualizar status do arquivo no pool
+  await supabase
+    .from('arquivos_pool')
+    .update({
+      status: 'vinculado',
+      demanda_id: demandaId
+    })
+    .eq('id', arquivoId);
+
+  return arquivoDemanda;
+}
+
+export async function deletarArquivoPool(arquivoId: string) {
+  // Buscar arquivo para pegar o path
+  const { data: arquivo, error: fetchError } = await supabase
+    .from('arquivos_pool')
+    .select('supabase_path')
+    .eq('id', arquivoId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  // Deletar do storage se existir
+  if (arquivo?.supabase_path) {
+    await supabase
+      .storage
+      .from('arquivos-juridico')
+      .remove([arquivo.supabase_path]);
+  }
+
+  // Deletar do banco
+  const { error } = await supabase
+    .from('arquivos_pool')
+    .delete()
+    .eq('id', arquivoId);
+
+  if (error) throw error;
 }

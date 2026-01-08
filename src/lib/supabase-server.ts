@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
+// import { cookies } from 'next/headers'; // Not used
 
 export function createServerClient() {
-  const cookieStore = cookies();
+  // Cookie store not used in current implementation
+  // const cookieStore = cookies();
   
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;

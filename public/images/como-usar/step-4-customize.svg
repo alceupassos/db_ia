@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#0D0A14"/>
+  
+  <text x="400" y="50" fill="#ffffff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">Bilingual Customization</text>
+
+  <g transform="translate(50, 100)">
+    <rect width="330" height="450" rx="12" fill="#1a1625" stroke="#374151"/>
+    <text x="20" y="40" fill="#A78BFA" font-family="sans-serif" font-size="18" font-weight="bold">Português (PT-BR)</text>
+    
+    <text x="20" y="90" fill="#9CA3AF" font-family="sans-serif" font-size="14">Título do Contrato</text>
+    <rect x="20" y="100" width="290" height="40" rx="4" fill="#0D0A14" stroke="#8B5CF6" stroke-width="1"/>
+    <text x="30" y="125" fill="#E5E7EB" font-family="sans-serif" font-size="14">Contrato de Prestação de Serviços</text>
+
+    <text x="20" y="170" fill="#9CA3AF" font-family="sans-serif" font-size="14">Cláusula 1 - Objeto</text>
+    <rect x="20" y="180" width="290" height="80" rx="4" fill="#0D0A14" stroke="#374151" stroke-width="1"/>
+    <text x="30" y="205" fill="#9CA3AF" font-family="sans-serif" font-size="14">O presente contrato tem como objeto...</text>
+  </g>
+
+  <g transform="translate(420, 100)">
+    <rect width="330" height="450" rx="12" fill="#1a1625" stroke="#374151"/>
+    <text x="20" y="40" fill="#A78BFA" font-family="sans-serif" font-size="18" font-weight="bold">English (EN)</text>
+    
+    <text x="20" y="90" fill="#9CA3AF" font-family="sans-serif" font-size="14">Contract Title</text>
+    <rect x="20" y="100" width="290" height="40" rx="4" fill="#0D0A14" stroke="#8B5CF6" stroke-width="1"/>
+    <text x="30" y="125" fill="#E5E7EB" font-family="sans-serif" font-size="14">Service Agreement Contract</text>
+
+    <text x="20" y="170" fill="#9CA3AF" font-family="sans-serif" font-size="14">Clause 1 - Purpose</text>
+    <rect x="20" y="180" width="290" height="80" rx="4" fill="#0D0A14" stroke="#374151" stroke-width="1"/>
+     <text x="30" y="205" fill="#9CA3AF" font-family="sans-serif" font-size="14">The purpose of this agreement...</text>
+  </g>
+
+  <path d="M380 220 C 400 220, 400 220, 420 220" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4 4"/>
+  <circle cx="380" cy="220" r="4" fill="#8B5CF6"/>
+  <circle cx="420" cy="220" r="4" fill="#8B5CF6"/>
+
+  <path d="M380 300 C 400 300, 400 300, 420 300" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4 4" opacity="0.5"/>
+  <circle cx="380" cy="300" r="4" fill="#8B5CF6" opacity="0.5"/>
+  <circle cx="420" cy="300" r="4" fill="#8B5CF6" opacity="0.5"/>
+
+</svg>

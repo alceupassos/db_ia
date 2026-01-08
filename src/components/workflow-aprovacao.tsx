@@ -45,6 +45,7 @@ export function WorkflowAprovacao({ arquivoId, statusAprovacao, onStatusChange }
 
   useEffect(() => {
     loadHistorico();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arquivoId]);
 
   async function loadHistorico() {

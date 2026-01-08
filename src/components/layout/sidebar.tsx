@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -21,7 +22,8 @@ import {
   FileSignature,
   Languages,
   Shield,
-  Briefcase
+  Briefcase,
+  HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -39,7 +41,9 @@ const juridicoSubItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/juridico/dashboard' },
   { icon: FileText, label: 'Demandas', href: '/juridico' },
   { icon: FolderOpen, label: 'Arquivos', href: '/juridico/arquivos' },
+  { icon: FolderOpen, label: 'Pool de Arquivos', href: '/juridico/arquivos/pool' },
   { icon: BarChart3, label: 'Relatórios', href: '/juridico/relatorios' },
+  { icon: HelpCircle, label: 'Como Usar', href: '/juridico/como-usar' },
   { icon: Sparkles, label: 'Cepalab IA', href: '#', isAction: true },
 ];
 
@@ -115,30 +119,63 @@ function SidebarContent({
   }, [pathname]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col relative">
+      {/* Premium Glassmorphism Background */}
+      <div 
+        className="absolute inset-0 backdrop-blur-[40px]"
+        style={{
+          background: `
+            linear-gradient(180deg, 
+              hsl(270 50% 4% / 0.95) 0%,
+              hsl(270 45% 5% / 0.98) 50%,
+              hsl(270 50% 4% / 0.95) 100%
+            ),
+            radial-gradient(circle at 0% 0%, hsl(var(--glow-primary) / 0.08) 0px, transparent 50%),
+            radial-gradient(circle at 100% 100%, hsl(var(--glow-accent) / 0.06) 0px, transparent 50%)
+          `,
+        }}
+      />
+      
+      {/* Glass border overlay */}
+      <div className="absolute inset-0 border-r border-white/5 pointer-events-none" />
+      
       {/* Logo */}
-      <div className="flex h-16 items-center border-b border-border px-6">
+      <div className="flex h-16 items-center border-b border-white/10 px-6 relative z-10 backdrop-blur-sm bg-background/30">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <FileText className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <motion.div
+            animate={{
+              boxShadow: [
+                '0 0 20px hsl(var(--glow-primary) / 0.4)',
+                '0 0 35px hsl(var(--glow-primary) / 0.6)',
+                '0 0 20px hsl(var(--glow-primary) / 0.4)',
+              ],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-accent/80 to-primary shadow-lg"
+          >
+            <Scale className="h-5 w-5 text-white" />
+          </motion.div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">Camada Jurídica</span>
-            <span className="text-xs text-muted-foreground">Cepalab</span>
+            <span className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Camada Jurídica</span>
+            <span className="text-xs text-muted-foreground font-medium">Cepalab</span>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 relative z-10">
         <nav className="space-y-1 p-4">
           <Collapsible open={isJuridicoOpen} onOpenChange={setIsJuridicoOpen}>
             <CollapsibleTrigger
               className={cn(
-                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 relative group",
                 isJuridicoActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_20px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_15px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
               )}
             >
               <div className="flex items-center gap-3">
@@ -196,20 +233,46 @@ function SidebarContent({
                 }
                 
                 return (
-                  <Link
+                  <motion.div
                     key={`${item.href}-${item.label}`}
-                    href={item.href}
-                    onClick={() => setMobileOpen?.(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
+                    whileHover={{ x: 2 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen?.(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-all duration-300 relative group",
+                        isActive
+                          ? "bg-primary/10 text-primary border-l-2 border-primary shadow-[0_0_12px_hsl(var(--glow-primary)/0.2)]"
+                          : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground hover:shadow-[0_0_8px_hsl(var(--glow-accent)/0.1)] hover:border-l-2 hover:border-accent/30"
+                      )}
+                    >
+                      {/* Glow indicator for active */}
+                      {isActive && (
+                        <motion.div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b from-primary to-accent"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            boxShadow: [
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                              '0 0 12px hsl(var(--glow-primary) / 1)',
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                            ],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      )}
+                      <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 );
               })}
             </CollapsibleContent>
@@ -219,12 +282,12 @@ function SidebarContent({
           <Collapsible open={isContratosOpen} onOpenChange={setIsContratosOpen}>
             <CollapsibleTrigger
               className={cn(
-                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 relative group",
                 pathname?.startsWith('/juridico/templates') || 
                 pathname?.startsWith('/juridico/traducao') ||
                 pathname?.startsWith('/juridico/assinaturas')
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_20px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_15px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
               )}
             >
               <div className="flex items-center gap-3">
@@ -243,20 +306,45 @@ function SidebarContent({
                 const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
                 
                 return (
-                  <Link
+                  <motion.div
                     key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen?.(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
+                    whileHover={{ x: 2 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen?.(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-all duration-300 relative group",
+                        isActive
+                          ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_18px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                          : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_12px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
+                      )}
+                    >
+                      {isActive && (
+                        <motion.div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b from-primary to-accent"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            boxShadow: [
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                              '0 0 12px hsl(var(--glow-primary) / 1)',
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                            ],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      )}
+                      <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 );
               })}
             </CollapsibleContent>
@@ -266,12 +354,12 @@ function SidebarContent({
           <Collapsible open={isCadastrosOpen} onOpenChange={setIsCadastrosOpen}>
             <CollapsibleTrigger
               className={cn(
-                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 relative group",
                 pathname?.startsWith('/juridico/empresas') || 
                 pathname?.startsWith('/juridico/assinantes') ||
                 pathname?.startsWith('/juridico/contrapartes')
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_20px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_15px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
               )}
             >
               <div className="flex items-center gap-3">
@@ -290,20 +378,45 @@ function SidebarContent({
                 const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
                 
                 return (
-                  <Link
+                  <motion.div
                     key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen?.(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
+                    whileHover={{ x: 2 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen?.(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-all duration-300 relative group",
+                        isActive
+                          ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_18px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                          : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_12px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
+                      )}
+                    >
+                      {isActive && (
+                        <motion.div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b from-primary to-accent"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            boxShadow: [
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                              '0 0 12px hsl(var(--glow-primary) / 1)',
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                            ],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      )}
+                      <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 );
               })}
             </CollapsibleContent>
@@ -313,10 +426,10 @@ function SidebarContent({
           <Collapsible open={isWhatsAppOpen} onOpenChange={setIsWhatsAppOpen}>
             <CollapsibleTrigger
               className={cn(
-                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 relative group",
                 pathname?.startsWith('/juridico/whatsapp')
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_20px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_15px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
               )}
             >
               <div className="flex items-center gap-3">
@@ -335,20 +448,45 @@ function SidebarContent({
                 const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
                 
                 return (
-                  <Link
+                  <motion.div
                     key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen?.(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
+                    whileHover={{ x: 2 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen?.(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-all duration-300 relative group",
+                        isActive
+                          ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_18px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                          : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_12px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
+                      )}
+                    >
+                      {isActive && (
+                        <motion.div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b from-primary to-accent"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            boxShadow: [
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                              '0 0 12px hsl(var(--glow-primary) / 1)',
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                            ],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      )}
+                      <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 );
               })}
             </CollapsibleContent>
@@ -358,10 +496,10 @@ function SidebarContent({
           <Collapsible open={isAdminOpen} onOpenChange={setIsAdminOpen}>
             <CollapsibleTrigger
               className={cn(
-                "w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 relative group",
                 pathname?.startsWith('/admin')
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_20px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_15px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
               )}
             >
               <div className="flex items-center gap-3">
@@ -380,20 +518,45 @@ function SidebarContent({
                 const isActive = pathname === item.href || !!pathname && pathname.startsWith(item.href + '/');
                 
                 return (
-                  <Link
+                  <motion.div
                     key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen?.(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
+                    whileHover={{ x: 2 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen?.(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 pl-8 text-sm font-medium transition-all duration-300 relative group",
+                        isActive
+                          ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_18px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                          : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_12px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
+                      )}
+                    >
+                      {isActive && (
+                        <motion.div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b from-primary to-accent"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            boxShadow: [
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                              '0 0 12px hsl(var(--glow-primary) / 1)',
+                              '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                            ],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      )}
+                      <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 );
               })}
             </CollapsibleContent>
@@ -401,42 +564,69 @@ function SidebarContent({
         </nav>
       </ScrollArea>
 
-      <Separator />
+      <Separator className="relative z-10 border-white/10" />
 
       {/* Account Section */}
-      <div className="p-4">
+      <div className="p-4 relative z-10 backdrop-blur-sm bg-background/30 border-t border-white/10">
         <div className="space-y-1">
           {accountItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             
             return (
-              <Link
+              <motion.div
                 key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen?.(false)}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                )}
+                whileHover={{ x: 2 }}
+                transition={{ duration: 0.2 }}
               >
-                <Icon className="h-5 w-5" />
-                {item.label}
-              </Link>
+                <Link
+                  href={item.href}
+                  onClick={() => setMobileOpen?.(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 relative group",
+                    isActive
+                      ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary border-l-2 border-primary shadow-[0_0_18px_hsl(var(--glow-primary)/0.3)] backdrop-blur-sm"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground hover:shadow-[0_0_12px_hsl(var(--glow-primary)/0.15)] hover:border-l-2 hover:border-primary/30"
+                  )}
+                >
+                  {isActive && (
+                    <motion.div
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b from-primary to-accent"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ 
+                        opacity: 1, 
+                        scale: 1,
+                        boxShadow: [
+                          '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                          '0 0 12px hsl(var(--glow-primary) / 1)',
+                          '0 0 8px hsl(var(--glow-primary) / 0.8)',
+                        ],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                  )}
+                  <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
+                  {item.label}
+                </Link>
+              </motion.div>
             );
           })}
         </div>
 
-        <Button
-          variant="ghost"
-          className="mt-4 w-full justify-start gap-3"
-          onClick={signOut}
-        >
-          <LogOut className="h-5 w-5" />
-          Sair
-        </Button>
+        <motion.div whileHover={{ x: 2 }} transition={{ duration: 0.2 }}>
+          <Button
+            variant="ghost"
+            className="mt-4 w-full justify-start gap-3 hover:bg-destructive/10 hover:text-destructive hover:border-l-2 hover:border-destructive/30 transition-all duration-300"
+            onClick={signOut}
+          >
+            <LogOut className="h-5 w-5" />
+            Sair
+          </Button>
+        </motion.div>
       </div>
     </div>
   );

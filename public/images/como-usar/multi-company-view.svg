@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+    <rect width="800" height="600" fill="#0D0A14"/>
+    <g transform="translate(50, 150)">
+      <rect width="220" height="300" rx="16" fill="#1a1625" stroke="#374151"/>
+      <text x="110" y="150" fill="#6B7280" font-family="sans-serif" font-size="20" text-anchor="middle">CEPALAB</text>
+    </g>
+    <g transform="translate(290, 150)">
+      <rect width="220" height="300" rx="16" fill="#1a1625" stroke="#8B5CF6" stroke-width="3"/>
+      <rect x="-5" y="-5" width="230" height="310" rx="20" fill="none" stroke="#8B5CF6" stroke-opacity="0.3"/>
+      <text x="110" y="150" fill="#ffffff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">SIBIONICS</text>
+      <circle cx="200" cy="30" r="15" fill="#8B5CF6"/>
+    </g>
+    <g transform="translate(530, 150)">
+      <rect width="220" height="300" rx="16" fill="#1a1625" stroke="#374151"/>
+      <text x="110" y="150" fill="#6B7280" font-family="sans-serif" font-size="20" text-anchor="middle">REALTRADE</text>
+    </g>
+  </svg>

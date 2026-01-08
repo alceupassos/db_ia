@@ -132,7 +132,7 @@ async function seed() {
 
   for (const template of templates) {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('templates_juridicos')
         .upsert(template, {
           onConflict: 'nome_pt',

@@ -32,6 +32,8 @@ import Link from 'next/link';
 import { FileUpload } from '@/components/file-upload';
 import { FileViewer } from '@/components/file-viewer';
 import { FileChat } from '@/components/file-chat';
+import { ArquivoVinculacaoModal } from '@/components/arquivo-vinculacao-modal';
+import { uploadArquivoParaPool, getArquivosPool, type ArquivoPool } from '@/app/actions/juridico';
 import {
   Select,
   SelectContent,
@@ -73,6 +75,9 @@ export default function ArquivosPage() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [uploadDemandaId, setUploadDemandaId] = useState<string>('');
+  const [uploadMode, setUploadMode] = useState<'demanda' | 'pool'>('pool'); // Modo padrão: pool
+  const [arquivoPoolParaVinculacao, setArquivoPoolParaVinculacao] = useState<ArquivoPool | null>(null);
+  const [vinculacaoModalOpen, setVinculacaoModalOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -114,15 +119,59 @@ export default function ArquivosPage() {
   }, [loadData]);
 
   const handleUpload = async (file: File) => {
-    if (!uploadDemandaId) {
-      throw new Error('Selecione uma demanda para vincular o arquivo');
+    if (uploadMode === 'demanda') {
+      if (!uploadDemandaId) {
+        throw new Error('Selecione uma demanda para vincular o arquivo');
+      }
+      const formData = new FormData();
+      formData.append('file', file);
+      await uploadArquivo(uploadDemandaId, formData);
+      loadData();
+    } else {
+      // Modo pool
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const result = await uploadArquivoParaPool(formData);
+        // Não recarregar dados aqui, modal será aberto após análise
+        return result;
+      } catch (error) {
+        console.error('Erro ao fazer upload para pool:', error);
+        
+        // Verificar diferentes tipos de erro relacionados à tabela pool
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (
+          errorMessage.includes('arquivos_pool') || 
+          errorMessage.includes('PGRST205') ||
+          errorMessage.includes('does not exist') ||
+          errorMessage.includes('not found')
+        ) {
+          throw new Error('Funcionalidade de pool não disponível. Execute a migration 014_arquivos_pool.sql no Supabase ou entre em contato com o administrador.');
+        }
+        
+        // Re-throw outros erros para serem tratados pelo componente
+        throw error;
+      }
     }
-    
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    await uploadArquivo(uploadDemandaId, formData);
-    loadData();
+  };
+
+  const handleAnalysisComplete = async (arquivoId: string) => {
+    // Buscar arquivo do pool para abrir modal de vinculação
+    try {
+      const arquivosPool = await getArquivosPool();
+      if (arquivosPool && arquivosPool.length > 0) {
+        const arquivo = arquivosPool.find(a => a.id === arquivoId);
+        if (arquivo) {
+          setArquivoPoolParaVinculacao(arquivo);
+          setVinculacaoModalOpen(true);
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao buscar arquivo do pool:', error);
+      // Se a tabela não existe, não mostrar erro ao usuário, apenas logar
+      // O arquivo já foi feito upload no storage, apenas não foi salvo no pool
+      // Usuário pode usar o modo "Vincular Direto a Demanda" como alternativa
+    }
   };
 
   const handleDelete = async (arquivoId: string) => {
@@ -137,11 +186,11 @@ export default function ArquivosPage() {
   };
 
   const getFileIcon = (mimeType: string | null) => {
-    if (!mimeType) return <FileIcon className="h-5 w-5" />;
-    if (mimeType.includes('pdf')) return <FileText className="h-5 w-5 text-red-400" />;
-    if (mimeType.includes('image')) return <Image className="h-5 w-5 text-blue-400" />;
-    if (mimeType.includes('word') || mimeType.includes('document')) return <File className="h-5 w-5 text-blue-500" />;
-    return <FileIcon className="h-5 w-5" />;
+    if (!mimeType) return <FileIcon className="h-5 w-5" aria-label="Arquivo" />;
+    if (mimeType.includes('pdf')) return <FileText className="h-5 w-5 text-red-400" aria-label="PDF" />;
+    if (mimeType.includes('image')) return <Image className="h-5 w-5 text-blue-400" aria-label="Imagem" />;
+    if (mimeType.includes('word') || mimeType.includes('document')) return <File className="h-5 w-5 text-blue-500" aria-label="Documento" />;
+    return <FileIcon className="h-5 w-5" aria-label="Arquivo" />;
   };
 
   const categorias = Array.from(new Set(arquivos.map(a => a.categoria).filter((c): c is string => typeof c === 'string' && c.length > 0))).sort();
@@ -180,26 +229,85 @@ export default function ArquivosPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex-1">
-            <Select value={uploadDemandaId} onValueChange={setUploadDemandaId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a demanda para vincular o arquivo" />
-              </SelectTrigger>
-              <SelectContent>
-                {demandas.map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {d.demanda} - {d.cliente_nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Modo de Upload */}
+          <div className="flex gap-2 p-1 bg-muted/30 rounded-lg border border-border/50">
+            <button
+              type="button"
+              onClick={() => {
+                setUploadMode('pool');
+                setUploadDemandaId('');
+              }}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
+                uploadMode === 'pool'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Upload para Pool (Recomendado)
+            </button>
+            <button
+              type="button"
+              onClick={() => setUploadMode('demanda')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
+                uploadMode === 'demanda'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Vincular Direto a Demanda
+            </button>
           </div>
-          
-          <FileUpload 
-            onUpload={handleUpload}
-            disabled={!uploadDemandaId}
-            maxSize={10}
-          />
+
+          {uploadMode === 'demanda' ? (
+            <>
+              <div className="flex-1">
+                <Select value={uploadDemandaId} onValueChange={setUploadDemandaId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a demanda para vincular o arquivo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {demandas.map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.demanda} - {d.cliente_nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <FileUpload 
+                onUpload={handleUpload}
+                disabled={!uploadDemandaId}
+                maxSize={10}
+              />
+            </>
+          ) : (
+            <>
+              <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Modo Pool:</strong> O arquivo será analisado pela IA e você poderá escolher a categoria e vincular a demanda depois.
+                </p>
+              </div>
+              <FileUpload 
+                onUpload={handleUpload}
+                disabled={false}
+                maxSize={10}
+                usePool={true}
+                onAnalysisComplete={handleAnalysisComplete}
+              />
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Link para Pool */}
+      <Card>
+        <CardContent className="pt-6">
+          <Link href="/juridico/arquivos/pool">
+            <Button variant="outline" className="w-full">
+              <FolderOpen className="h-4 w-4 mr-2" />
+              Ver Pool de Arquivos Não Vinculados
+            </Button>
+          </Link>
         </CardContent>
       </Card>
 
@@ -415,6 +523,17 @@ export default function ArquivosPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Vinculação (para arquivos do pool) */}
+      <ArquivoVinculacaoModal
+        arquivo={arquivoPoolParaVinculacao}
+        open={vinculacaoModalOpen}
+        onOpenChange={setVinculacaoModalOpen}
+        onSuccess={() => {
+          loadData();
+          setArquivoPoolParaVinculacao(null);
+        }}
+      />
     </div>
   );
 }

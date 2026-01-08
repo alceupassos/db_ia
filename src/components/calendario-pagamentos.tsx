@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { getDemandas, type DemandaJuridica } from '@/app/actions/juridico';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Evento {
   id: string;
@@ -95,11 +96,11 @@ export function CalendarioPagamentos() {
   const getEventColor = (tipo: Evento['tipo']) => {
     switch (tipo) {
       case 'pagamento':
-        return 'bg-blue-500/20 border-blue-500/50 text-blue-400';
+        return 'bg-blue-500/30';
       case 'fim_contrato':
-        return 'bg-red-500/20 border-red-500/50 text-red-400';
+        return 'bg-red-500/30';
       case 'entrega':
-        return 'bg-green-500/20 border-green-500/50 text-green-400';
+        return 'bg-green-500/30';
     }
   };
 
@@ -141,11 +142,32 @@ export function CalendarioPagamentos() {
             Calendário de Pagamentos
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={goToPreviousMonth}>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={goToPreviousMonth}
+              className="hover:bg-accent/20"
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium w-40 text-center capitalize">{monthName}</span>
-            <Button variant="outline" size="icon" onClick={goToNextMonth}>
+            <AnimatePresence mode="wait">
+              <motion.span 
+                key={monthName}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-medium w-40 text-center capitalize"
+              >
+                {monthName}
+              </motion.span>
+            </AnimatePresence>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={goToNextMonth}
+              className="hover:bg-accent/20"
+            >
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -163,7 +185,15 @@ export function CalendarioPagamentos() {
           </div>
 
           {/* Dias do mês */}
-          <div className="grid grid-cols-7 gap-1">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={`${currentDate.getMonth()}-${currentDate.getFullYear()}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-7 gap-1"
+            >
             {/* Espaços vazios antes do primeiro dia */}
             {Array.from({ length: startingDayOfWeek }).map((_, index) => (
               <div key={`empty-${index}`} className="aspect-square" />
@@ -179,51 +209,60 @@ export function CalendarioPagamentos() {
                 currentDate.getFullYear() === new Date().getFullYear();
 
               return (
-                <div
+                <motion.div
                   key={day}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.01 }}
+                  whileHover={{ scale: 1.05 }}
                   className={cn(
-                    'aspect-square border border-border rounded-lg p-1 relative cursor-pointer hover:bg-accent transition-colors',
-                    isToday && 'ring-2 ring-primary'
+                    'aspect-square border border-border/50 rounded-lg p-1.5 relative cursor-pointer',
+                    'hover:bg-accent/20 hover:border-accent/50 transition-all duration-200',
+                    isToday && 'ring-1 ring-primary/50 bg-primary/5'
                   )}
                   title={dayEventos.map(e => `${getEventLabel(e.tipo)}: ${e.demanda}`).join('\n')}
                 >
-                  <div className="text-xs font-medium mb-1">{day}</div>
-                  <div className="space-y-0.5">
-                    {dayEventos.slice(0, 2).map((evento) => (
+                  <div className={cn(
+                    "text-xs font-medium mb-1.5",
+                    isToday && "text-primary font-semibold"
+                  )}>
+                    {day}
+                  </div>
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    {dayEventos.slice(0, 3).map((evento) => (
                       <div
                         key={evento.id}
                         className={cn(
-                          'text-[10px] px-1 py-0.5 rounded border truncate',
+                          'w-1.5 h-1.5 rounded-full',
                           getEventColor(evento.tipo)
                         )}
                         title={`${getEventLabel(evento.tipo)}: ${evento.demanda} - ${evento.cliente}`}
-                      >
-                        {getEventLabel(evento.tipo)}
-                      </div>
+                      />
                     ))}
-                    {dayEventos.length > 2 && (
-                      <div className="text-[10px] text-muted-foreground">
-                        +{dayEventos.length - 2}
+                    {dayEventos.length > 3 && (
+                      <div className="text-[9px] text-muted-foreground leading-none">
+                        +{dayEventos.length - 3}
                       </div>
                     )}
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+            </motion.div>
+          </AnimatePresence>
 
           {/* Legenda */}
-          <div className="flex items-center gap-4 mt-4 pt-4 border-t">
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/50">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-blue-500/20 border border-blue-500/50" />
+              <div className="w-2 h-2 rounded-full bg-blue-500/30" />
               <span className="text-xs text-muted-foreground">Pagamento</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-red-500/20 border border-red-500/50" />
+              <div className="w-2 h-2 rounded-full bg-red-500/30" />
               <span className="text-xs text-muted-foreground">Fim Contrato</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/50" />
+              <div className="w-2 h-2 rounded-full bg-green-500/30" />
               <span className="text-xs text-muted-foreground">Entrega</span>
             </div>
           </div>

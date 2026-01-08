@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Shield, Crown, Scale, Eye, User, Clock, Mail } from 'lucide-react';
+import { Shield, Crown, Scale, Eye, User, Mail } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 
 interface InviteUserModalProps {
@@ -86,8 +86,8 @@ export function InviteUserModal({ open, onOpenChange, onSuccess }: InviteUserMod
 
       onSuccess?.();
       handleOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || 'Erro ao enviar convite');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erro ao enviar convite');
     } finally {
       setLoading(false);
     }

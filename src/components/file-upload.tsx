@@ -6,17 +6,21 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface FileUploadProps {
-  onUpload: (file: File) => Promise<void>;
+  onUpload: (file: File) => Promise<void | { id: string }>;
   disabled?: boolean;
   accept?: string;
   maxSize?: number; // em MB
+  usePool?: boolean; // Se true, upload vai para pool (sem demanda obrigatória)
+  onAnalysisComplete?: (arquivoId: string) => void; // Callback após análise
 }
 
 export function FileUpload({ 
   onUpload, 
   disabled, 
   accept = '.pdf,.doc,.docx,.jpg,.jpeg,.png,.txt',
-  maxSize = 10 
+  maxSize = 10,
+  usePool = false,
+  onAnalysisComplete
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -33,20 +37,33 @@ export function FileUpload({
     setUploading(true);
     setError(null);
     try {
-      await onUpload(file);
-      // Após upload, iniciar estado de análise
-      setUploading(false);
-      setAnalyzing(true);
-      // Resetar estado de análise após 3 segundos (análise acontece em background)
-      setTimeout(() => {
-        setAnalyzing(false);
-      }, 3000);
+      const result = await onUpload(file);
+      
+      // Se usar pool e houver callback de análise, aguardar um pouco e chamar
+      if (usePool && onAnalysisComplete && result && typeof result === 'object' && 'id' in result) {
+        setUploading(false);
+        setAnalyzing(true);
+        // Aguardar análise (delay para IA processar)
+        setTimeout(async () => {
+          setAnalyzing(false);
+          if (onAnalysisComplete) {
+            onAnalysisComplete(result.id as string);
+          }
+        }, 5000); // 5 segundos para análise
+      } else {
+        // Comportamento original
+        setUploading(false);
+        setAnalyzing(true);
+        setTimeout(() => {
+          setAnalyzing(false);
+        }, 3000);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao fazer upload');
       setUploading(false);
       setAnalyzing(false);
     }
-  }, [maxSize, onUpload]);
+  }, [maxSize, onUpload, usePool, onAnalysisComplete]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -165,11 +182,11 @@ interface FileListProps {
 
 export function FileList({ files, onRemove, onView }: FileListProps) {
   const getFileIcon = (mimeType?: string | null) => {
-    if (!mimeType) return <File className="h-5 w-5 text-muted-foreground" />;
-    if (mimeType.includes('pdf')) return <FileText className="h-5 w-5 text-red-400" />;
-    if (mimeType.includes('image')) return <Image className="h-5 w-5 text-blue-400" />;
-    if (mimeType.includes('word') || mimeType.includes('document')) return <FileText className="h-5 w-5 text-blue-500" />;
-    return <File className="h-5 w-5 text-muted-foreground" />;
+    if (!mimeType) return <File className="h-5 w-5 text-muted-foreground" aria-label="Arquivo" />;
+    if (mimeType.includes('pdf')) return <FileText className="h-5 w-5 text-red-400" aria-label="PDF" />;
+    if (mimeType.includes('image')) return <Image className="h-5 w-5 text-blue-400" aria-label="Imagem" />;
+    if (mimeType.includes('word') || mimeType.includes('document')) return <FileText className="h-5 w-5 text-blue-500" aria-label="Documento" />;
+    return <File className="h-5 w-5 text-muted-foreground" aria-label="Arquivo" />;
   };
 
   if (files.length === 0) {

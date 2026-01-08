@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Supabase client not used in this route
+// const supabase = createClient(
+//   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+//   process.env.SUPABASE_SERVICE_ROLE_KEY!
+// );
 
 export async function POST(req: Request) {
   try {
@@ -16,8 +15,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Texto e obrigatorio' }, { status: 400 });
     }
 
-    // Verificar cache
-    const cacheKey = `traducao:${sourceLanguage}:${targetLanguage}:${Buffer.from(text).toString('base64').slice(0, 50)}`;
+    // Verificar cache (implementação futura)
+    // const cacheKey = `traducao:${sourceLanguage}:${targetLanguage}:${Buffer.from(text).toString('base64').slice(0, 50)}`;
     
     // Gerar traducao com contexto juridico
     const { text: translatedText } = await generateText({

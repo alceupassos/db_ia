@@ -2,12 +2,9 @@ import { NextResponse } from 'next/server';
 import { authenticator } from 'otplib';
 import { createServerClient } from '@/lib/supabase-server';
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     const supabase = createServerClient();
-    
-    // Usar service role para operacoes privilegiadas
-    const supabaseAdmin = createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

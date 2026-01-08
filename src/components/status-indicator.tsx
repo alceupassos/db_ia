@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 
@@ -13,33 +14,38 @@ interface StatusIndicatorProps {
 const statusConfig = {
   success: {
     icon: CheckCircle2,
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
-    borderColor: 'border-green-500/30',
+    color: 'text-emerald-400',
+    bgColor: 'bg-emerald-500/10',
+    borderColor: 'border-emerald-500/30',
+    glowColor: 'var(--glow-success)',
   },
   error: {
     icon: XCircle,
-    color: 'text-red-500',
-    bgColor: 'bg-red-500/10',
-    borderColor: 'border-red-500/30',
+    color: 'text-rose-400',
+    bgColor: 'bg-rose-500/10',
+    borderColor: 'border-rose-500/30',
+    glowColor: 'var(--glow-error)',
   },
   warning: {
     icon: AlertCircle,
-    color: 'text-yellow-500',
-    bgColor: 'bg-yellow-500/10',
-    borderColor: 'border-yellow-500/30',
+    color: 'text-amber-400',
+    bgColor: 'bg-amber-500/10',
+    borderColor: 'border-amber-500/30',
+    glowColor: 'var(--glow-warning)',
   },
   pending: {
     icon: Clock,
-    color: 'text-blue-500',
+    color: 'text-blue-400',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30',
+    glowColor: 'var(--glow-accent)',
   },
   info: {
     icon: AlertCircle,
-    color: 'text-blue-500',
+    color: 'text-blue-400',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30',
+    glowColor: 'var(--glow-accent)',
   },
 };
 
@@ -70,26 +76,68 @@ export function StatusIndicator({
 
   return (
     <div className="flex items-center gap-2">
-      <div
+      <motion.div
         className={cn(
           'relative flex items-center justify-center rounded-full border',
           config.bgColor,
           config.borderColor,
-          sizeStyle.container,
-          pulse && 'animate-pulse'
+          sizeStyle.container
         )}
+        animate={pulse ? {
+          boxShadow: [
+            `0 0 15px hsl(${config.glowColor} / 0.4)`,
+            `0 0 25px hsl(${config.glowColor} / 0.6)`,
+            `0 0 15px hsl(${config.glowColor} / 0.4)`,
+          ],
+          scale: [1, 1.08, 1],
+        } : {}}
+        transition={{
+          duration: 2,
+          repeat: pulse ? Infinity : 0,
+          ease: 'easeInOut',
+        }}
+        style={{
+          boxShadow: pulse ? undefined : `0 0 12px hsl(${config.glowColor} / 0.3)`,
+        }}
       >
         <Icon className={cn(config.color, sizeStyle.icon)} />
+        
+        {/* Pulsing ring effect */}
         {pulse && (
-          <span
+          <motion.span
             className={cn(
-              'absolute inset-0 rounded-full',
-              config.bgColor,
-              'animate-ping'
+              'absolute inset-0 rounded-full border-2',
+              config.borderColor
             )}
+            animate={{
+              scale: [1, 1.5, 1.5],
+              opacity: [0.8, 0, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: 'easeOut',
+            }}
           />
         )}
-      </div>
+        
+        {/* Glow ring */}
+        <motion.span
+          className="absolute inset-0 rounded-full"
+          animate={pulse ? {
+            boxShadow: [
+              `0 0 8px hsl(${config.glowColor} / 0.3)`,
+              `0 0 16px hsl(${config.glowColor} / 0.5)`,
+              `0 0 8px hsl(${config.glowColor} / 0.3)`,
+            ],
+          } : {}}
+          transition={{
+            duration: 2,
+            repeat: pulse ? Infinity : 0,
+            ease: 'easeInOut',
+          }}
+        />
+      </motion.div>
       {label && (
         <span className="text-sm text-muted-foreground">{label}</span>
       )}

@@ -28,7 +28,7 @@ async function createJuridicoUser() {
       console.log('✅ Usuário já existe. Atualizando senha...');
       
       // Atualiza a senha do usuário existente
-      const { data, error } = await supabase.auth.admin.updateUserById(
+      const { error } = await supabase.auth.admin.updateUserById(
         existingUser.id,
         { password: password }
       );
@@ -40,7 +40,7 @@ async function createJuridicoUser() {
       console.log(`🔑 Senha: ${password}`);
     } else {
       // Cria novo usuário
-      const { data, error } = await supabase.auth.admin.createUser({
+      const { error } = await supabase.auth.admin.createUser({
         email: email,
         password: password,
         email_confirm: true, // Confirma email automaticamente

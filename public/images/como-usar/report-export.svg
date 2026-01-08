@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+    <rect width="800" height="600" fill="#0D0A14"/>
+    <g transform="translate(100, 100)">
+      <rect width="250" height="350" rx="12" fill="#1a1625" stroke="#374151"/>
+      <rect x="30" y="40" width="190" height="15" rx="2" fill="#8B5CF6" opacity="0.4"/>
+      <rect x="30" y="70" width="190" height="150" rx="4" fill="#8B5CF6" opacity="0.1"/>
+      <path d="M50 200 L100 150 L150 180 L200 130" stroke="#8B5CF6" stroke-width="3" fill="none"/>
+    </g>
+    <path d="M380 300 H480" stroke="#8B5CF6" stroke-width="4" marker-end="url(#arrowhead)"/>
+    <g transform="translate(520, 150)">
+      <rect width="180" height="120" rx="12" fill="#1a1625" stroke="#A78BFA"/>
+      <text x="90" y="70" fill="#ffffff" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle">EXCEL</text>
+    </g>
+    <g transform="translate(520, 330)">
+      <rect width="180" height="120" rx="12" fill="#1a1625" stroke="#8B5CF6"/>
+      <text x="90" y="70" fill="#ffffff" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle">PDF</text>
+    </g>
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#8B5CF6"/>
+      </marker>
+    </defs>
+  </svg>

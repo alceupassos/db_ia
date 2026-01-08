@@ -18,7 +18,13 @@ export async function POST(req: Request) {
     }
 
     // Enviar mensagem via WPPConnect
-    const payload: any = {
+    interface MessagePayload {
+      phone: string;
+      message: string;
+      media?: string;
+    }
+    
+    const payload: MessagePayload = {
       phone,
       message,
     };

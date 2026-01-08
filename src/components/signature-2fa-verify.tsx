@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Camera, Shield, Keyboard, CheckCircle, AlertTriangle } from 'lucide-react';
 import {
   Dialog,
@@ -31,7 +31,6 @@ export function Signature2FAVerify({
 }: Signature2FAVerifyProps) {
   const [mode, setMode] = useState<'camera' | 'manual'>('camera');
   const [code, setCode] = useState('');
-  const [scanning, setScanning] = useState(false);
   const [error, setError] = useState('');
   const [verifying, setVerifying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -63,7 +62,7 @@ export function Signature2FAVerify({
         const data = await response.json();
         setError(data.error || 'Código inválido');
       }
-    } catch (err) {
+    } catch {
       setError('Erro ao verificar. Tente novamente.');
     } finally {
       setVerifying(false);

@@ -1,20 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { 
   getDemandas, 
   getKPIs, 
-  getUniqueResponsaveis, 
-  getUniqueClientes,
   deleteDemanda,
-  updateDemandaField,
   type DemandaJuridica,
-  type DemandaFilters 
+  type DemandaFilters,
+  getEvolucaoMensal
 } from '@/app/actions/juridico';
 import { KPICard } from '@/components/dashboard/kpi-card';
-import { AreaChartComponent } from '@/components/dashboard/area-chart';
 import { ProgressRing } from '@/components/dashboard/progress-ring';
 import { CalendarioPagamentos } from '@/components/calendario-pagamentos';
+import { GradientAreaChart } from '@/components/charts/gradient-area-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +33,8 @@ import {
 import { ExportButton } from '@/components/export-button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -50,35 +50,39 @@ export default function JuridicoDashboard() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<DemandaFilters>({});
   const [kpis, setKpis] = useState({ total: 0, pendentes: 0, emAndamento: 0, concluidos: 0 });
-  const [responsaveis, setResponsaveis] = useState<string[]>([]);
-  const [clientes, setClientes] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [demandaToDelete, setDemandaToDelete] = useState<string | null>(null);
+  const [monthlyData, setMonthlyData] = useState<Array<{ name: string; value: number }>>([]);
 
-  useEffect(() => {
-    loadData();
-  }, [filters]);
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [demandasData, kpisData, respData, clientesData] = await Promise.all([
+      const [demandasData, kpisData, evolucao] = await Promise.all([
         getDemandas(filters),
         getKPIs(),
-        getUniqueResponsaveis(),
-        getUniqueClientes()
+        getEvolucaoMensal()
       ]);
       setDemandas(demandasData);
       setKpis(kpisData);
-      setResponsaveis(respData);
-      setClientes(clientesData);
+      
+      // Formatar dados mensais para o gráfico
+      const formattedMonthly = evolucao.map(item => ({
+        name: new Date(item.mes + '-01').toLocaleDateString('pt-BR', { month: 'short' }),
+        value: item.criadas
+      }));
+      setMonthlyData(formattedMonthly);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
     }
-  }
+  }, [filters]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleSearch = () => {
     setFilters({ ...filters, search: searchTerm || undefined });
@@ -124,23 +128,16 @@ export default function JuridicoDashboard() {
     }
   };
 
-  // Dados mockados para gráficos (substituir com dados reais)
-  const monthlyData = [
-    { name: 'Jan', value: 45 },
-    { name: 'Fev', value: 52 },
-    { name: 'Mar', value: 48 },
-    { name: 'Abr', value: 61 },
-    { name: 'Mai', value: 55 },
-    { name: 'Jun', value: 67 },
-  ];
 
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-light tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-1">
             Visão geral das demandas jurídicas
           </p>
         </div>
@@ -156,41 +153,51 @@ export default function JuridicoDashboard() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <KPICard
-          title="Total de Demandas"
-          value={kpis.total}
-          icon={<FileText className="h-4 w-4" />}
-          trend={{ value: 12, isPositive: true }}
-        />
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <KPICard
+            title="Total de Demandas"
+            value={kpis.total}
+            icon={FileText}
+            variant="default"
+          />
         <KPICard
           title="Pendentes"
           value={kpis.pendentes}
-          icon={<AlertCircle className="h-4 w-4" />}
-          trend={{ value: -5, isPositive: false }}
+          icon={AlertCircle}
+          variant="warning"
         />
         <KPICard
           title="Em Andamento"
           value={kpis.emAndamento}
-          icon={<Clock className="h-4 w-4" />}
-          trend={{ value: 8, isPositive: true }}
+          icon={Clock}
+          variant="info"
         />
         <KPICard
           title="Concluídos"
           value={kpis.concluidos}
-          icon={<CheckCircle className="h-4 w-4" />}
-          trend={{ value: 15, isPositive: true }}
+          icon={CheckCircle}
+          variant="success"
         />
       </div>
 
       {/* Charts, Calendar and Progress */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-10">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-10">
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Evolução Mensal</CardTitle>
           </CardHeader>
           <CardContent>
-            <AreaChartComponent data={monthlyData} title="" />
+            {monthlyData.length > 0 ? (
+              <GradientAreaChart
+                data={monthlyData}
+                dataKey="value"
+                color="hsl(var(--primary))"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                Sem dados disponíveis
+              </div>
+            )}
           </CardContent>
         </Card>
         <div className="col-span-3 space-y-4">
@@ -277,59 +284,84 @@ export default function JuridicoDashboard() {
               <p className="text-muted-foreground">Nenhuma demanda encontrada</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {demandas.slice(0, 10).map((demanda) => (
-                <div
-                  key={demanda.id}
-                  className="flex items-start gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent"
-                >
-                  <Link
-                    href={`/juridico/${demanda.id}`}
-                    className="flex-1 space-y-2"
+            <div className="grid gap-4 md:grid-cols-2">
+              {demandas.slice(0, 10).map((demanda, index) => {
+                const statusColors = {
+                  'CONCLUÍDO': 'border-l-emerald-500',
+                  'EM ANDAMENTO': 'border-l-amber-500',
+                  'PENDENTE': 'border-l-rose-500',
+                  'Cancelado': 'border-l-muted',
+                };
+                const statusColor = statusColors[demanda.status as keyof typeof statusColors] || 'border-l-primary';
+                
+                return (
+                  <motion.div
+                    key={demanda.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={cn(
+                      "group relative rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-5 transition-all duration-300",
+                      "hover:border-border hover:bg-card/80 hover:shadow-lg hover:shadow-primary/5",
+                      "border-l-2",
+                      statusColor
+                    )}
                   >
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-semibold">{demanda.demanda}</h3>
-                      {getStatusBadge(demanda.status)}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {demanda.cliente_nome}
-                    </p>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        {demanda.responsavel}
+                    <Link
+                      href={`/juridico/${demanda.id}`}
+                      className="flex-1 space-y-3 block"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="font-medium text-foreground leading-snug group-hover:text-primary transition-colors">
+                          {demanda.demanda}
+                        </h3>
+                        {getStatusBadge(demanda.status)}
                       </div>
-                      {demanda.data_solicitacao && (
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(demanda.data_solicitacao).toLocaleDateString('pt-BR')}
+                      <p className="text-sm text-muted-foreground">
+                        {demanda.cliente_nome}
+                      </p>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t border-border/30">
+                        <div className="flex items-center gap-1.5">
+                          <User className="h-3 w-3" />
+                          {demanda.responsavel}
                         </div>
-                      )}
+                        {demanda.data_solicitacao && (
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(demanda.data_solicitacao).toLocaleDateString('pt-BR')}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                    <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleEdit(demanda.id);
+                        }}
+                        className="h-7 w-7"
+                      >
+                        <Pencil className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeleteClick(demanda.id, e);
+                        }}
+                        className="h-7 w-7 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
-                  </Link>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleEdit(demanda.id);
-                      }}
-                      className="h-8 w-8"
-                    >
-                      <Pencil className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => handleDeleteClick(demanda.id, e)}
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </CardContent>

@@ -41,7 +41,7 @@ async function applyMigration() {
       
       if (error) {
         // Tenta executar diretamente
-        const { error: directError } = await supabase.from('_temp').select('1').limit(0);
+        await supabase.from('_temp').select('1').limit(0);
         console.log(`    ⚠️  Comando pode já ter sido executado ou precisa ser aplicado manualmente`);
       } else {
         console.log(`    ✓ Comando executado`);

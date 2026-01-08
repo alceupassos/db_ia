@@ -19,7 +19,7 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function askCepalab(input: string, model: 'flash' | 'pro' = 'flash') {
+export async function askCepalab(input: string) {
     const modelId = 'gpt-4o';
 
     // Fetch knowledge base info to give context to the AI

@@ -1,20 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, QrCode, CheckCircle2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase-client';
 
 export default function WhatsAppPage() {
   const [sessionStatus, setSessionStatus] = useState<'disconnected' | 'connected' | 'connecting'>('disconnected');
   const [qrCode, setQrCode] = useState('');
 
-  useEffect(() => {
-    checkSession();
-  }, []);
-
-  async function checkSession() {
+  const checkSession = useCallback(async () => {
     try {
       const response = await fetch('/api/whatsapp/session?session=default');
       const data = await response.json();
@@ -22,7 +17,12 @@ export default function WhatsAppPage() {
     } catch (error) {
       console.error('Error checking session:', error);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    checkSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function startSession() {
     setSessionStatus('connecting');
@@ -84,7 +84,8 @@ export default function WhatsAppPage() {
               <p className="text-sm text-muted-foreground">
                 Escaneie o QR Code com seu WhatsApp
               </p>
-              <img src={qrCode} alt="QR Code" className="w-48 h-48" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qrCode} alt="QR Code para conectar WhatsApp" className="w-48 h-48" />
             </div>
           )}
         </CardContent>

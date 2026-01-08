@@ -47,3 +47,24 @@ MSSQL_DATABASE=sgc
 SUPABASE_URL=https://supabase.angra.io
 SUPABASE_KEY=your_service_role_key
 ```
+
+## Gemini API Configuration
+
+Para usar a funcionalidade de geração de infográficos na página "Como Usar", adicione a seguinte variável ao `.env.local`:
+
+```bash
+GEMINI_API_KEY=AIzaSyBOulRkp3hVZekjhYqmshOY41nAf-3K4KQ
+```
+
+### Como obter a chave:
+1. Acesse [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Crie uma nova API key ou use uma existente
+3. Certifique-se de que tem acesso ao Gemini 3 Pro (necessário para Nano Banana Pro)
+4. Cole a chave no arquivo `.env.local`
+
+**Nota**: A geração de imagens via Gemini 3 Nano Banana Pro pode requerer plano pago. Verifique os limites de uso na documentação oficial do Google.
+
+**Configuração da Landing Page "Como Usar":**
+- A landing page utiliza o cliente Gemini (`lib/gemini.ts`) para gerar infográficos automaticamente
+- As imagens são armazenadas em cache no Supabase Storage para melhor performance
+- Componentes disponíveis: `InfographicCard`, `Flowchart`, `ImageGenerator`, `InfographicImage`

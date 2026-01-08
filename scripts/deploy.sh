@@ -10,6 +10,7 @@ VPS_USER="cepalab"
 VPS_HOST="192.168.100.20"
 VPS_PATH="/home/cepalab/apps/juridico"
 APP_NAME="cepalab-juridico"
+VPS_PASSWORD="abc123.."
 
 echo "🚀 Iniciando deploy para $VPS_HOST..."
 
@@ -37,11 +38,11 @@ tar -czf deploy.tar.gz \
 
 # 3. Copy to VPS
 echo "📤 Enviando arquivos para VPS..."
-scp deploy.tar.gz $VPS_USER@$VPS_HOST:/tmp/
+sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no deploy.tar.gz $VPS_USER@$VPS_HOST:/tmp/
 
 # 4. Deploy on VPS
 echo "🔧 Executando deploy no VPS..."
-ssh $VPS_USER@$VPS_HOST << 'ENDSSH'
+sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST << 'ENDSSH'
     set -e
     
     # Create directory if not exists
@@ -61,7 +62,7 @@ ssh $VPS_USER@$VPS_HOST << 'ENDSSH'
     
     # Install dependencies
     echo "📦 Instalando dependências..."
-    npm ci --production
+    npm install --production --legacy-peer-deps
     
     # Restart with Docker (if using Docker)
     if command -v docker &> /dev/null; then

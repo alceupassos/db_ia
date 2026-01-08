@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#0D0A14"/>
+  
+  <g transform="translate(100, 100)">
+    <rect width="180" height="140" rx="12" fill="#1a1625" stroke="#8B5CF6" stroke-width="1"/>
+    <path d="M20 40 H160 V120 H20 Z" fill="url(#folderGradient)"/>
+    <path d="M20 40 L60 20 H100 L140 40 Z" fill="#A78BFA"/>
+    <text x="90" y="100" fill="#ffffff" font-family="sans-serif" font-size="16" text-anchor="middle">Contracts</text>
+  </g>
+
+  <g transform="translate(310, 100)">
+    <rect width="180" height="140" rx="12" fill="#1a1625" stroke="#8B5CF6" stroke-width="1"/>
+    <path d="M20 40 H160 V120 H20 Z" fill="url(#folderGradient)"/>
+    <path d="M20 40 L60 20 H100 L140 40 Z" fill="#A78BFA"/>
+    <text x="90" y="100" fill="#ffffff" font-family="sans-serif" font-size="14" text-anchor="middle">Powers of Attorney</text>
+  </g>
+
+  <g transform="translate(520, 100)">
+    <rect width="180" height="140" rx="12" fill="#1a1625" stroke="#8B5CF6" stroke-width="1"/>
+    <path d="M20 40 H160 V120 H20 Z" fill="url(#folderGradient)"/>
+    <path d="M20 40 L60 20 H100 L140 40 Z" fill="#A78BFA"/>
+    <text x="90" y="100" fill="#ffffff" font-family="sans-serif" font-size="16" text-anchor="middle">NDAs</text>
+  </g>
+
+  <g transform="translate(100, 300)">
+    <rect width="180" height="140" rx="12" fill="#1a1625" stroke="#8B5CF6" stroke-width="1"/>
+    <path d="M20 40 H160 V120 H20 Z" fill="url(#folderGradient)"/>
+    <path d="M20 40 L60 20 H100 L140 40 Z" fill="#A78BFA"/>
+    <text x="90" y="100" fill="#ffffff" font-family="sans-serif" font-size="16" text-anchor="middle">MOUs</text>
+  </g>
+
+  <g transform="translate(310, 300)">
+    <rect width="180" height="140" rx="12" fill="#1a1625" stroke="#8B5CF6" stroke-width="1"/>
+    <path d="M20 40 H160 V120 H20 Z" fill="url(#folderGradient)"/>
+    <path d="M20 40 L60 20 H100 L140 40 Z" fill="#A78BFA"/>
+    <text x="90" y="100" fill="#ffffff" font-family="sans-serif" font-size="16" text-anchor="middle">Patents</text>
+  </g>
+
+  <g transform="translate(520, 300)">
+    <rect width="180" height="140" rx="12" fill="#1a1625" stroke="#8B5CF6" stroke-width="1"/>
+    <path d="M20 40 H160 V120 H20 Z" fill="url(#folderGradient)"/>
+    <path d="M20 40 L60 20 H100 L140 40 Z" fill="#A78BFA"/>
+    <text x="90" y="100" fill="#ffffff" font-family="sans-serif" font-size="16" text-anchor="middle">Bids</text>
+  </g>
+
+  <defs>
+    <linearGradient id="folderGradient" x1="90" y1="40" x2="90" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#A78BFA" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+</svg>

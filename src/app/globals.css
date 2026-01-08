@@ -2,31 +2,38 @@
 @plugin "tailwindcss-animate";
 
 @theme {
-  --font-sans: "Inter", "Geist Sans", system-ui, sans-serif;
-  --font-heading: "Playfair Display", serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
+  --font-heading: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", monospace;
   
-  /* Law Firm Premium Dark Theme */
-  --background: 240 10% 4%;         /* #09090b - Quase preto premium */
-  --foreground: 0 0% 95%;           /* #f2f2f2 - Branco suave */
-  --card: 240 10% 6%;               /* Cards mais escuros com profundidade */
-  --card-foreground: 0 0% 95%;
-  --popover: 240 10% 6%;
-  --popover-foreground: 0 0% 95%;
-  --primary: 38 100% 50%;           /* #ffa500 - Dourado juridico premium */
-  --primary-foreground: 240 10% 4%;
-  --secondary: 240 10% 8%;          /* Secundario mais escuro */
-  --secondary-foreground: 0 0% 95%;
-  --muted: 240 10% 10%;
-  --muted-foreground: 215 20% 65%;  /* #94a3b8 - Slate 400 */
-  --accent: 220 70% 50%;            /* Azul profissional */
-  --accent-foreground: 0 0% 95%;
+  /* Premium Dark Theme - Cinza Neutro Moderno */
+  --background: 240 10% 8%;         /* #141416 - Cinza escuro neutro */
+  --foreground: 240 10% 95%;        /* Branco neutro */
+  --card: 240 10% 12%;              /* Card base cinza claro */
+  --card-foreground: 240 10% 95%;
+  --popover: 240 10% 12%;
+  --popover-foreground: 240 10% 95%;
+  --primary: 270 85% 65%;           /* Roxo vibrante mantido */
+  --primary-foreground: 240 10% 98%;
+  --secondary: 240 10% 16%;         /* Secundario cinza */
+  --secondary-foreground: 240 10% 95%;
+  --muted: 240 10% 18%;             /* Areas mutadas mais visiveis */
+  --muted-foreground: 240 5% 65%;   /* Cinza neutro */
+  --accent: 280 85% 70%;            /* Magenta accent suavizado */
+  --accent-foreground: 240 10% 98%;
   --destructive: 0 84% 60%;         /* #f43f5e - Rose 500 */
   --destructive-foreground: 0 0% 95%;
-  --border: 240 10% 12%;            /* Bordas mais visiveis */
-  --input: 240 10% 10%;
-  --ring: 38 100% 50%;              /* Dourado para foco */
+  --border: 240 10% 22%;            /* Bordas mais definidas */
+  --input: 240 10% 14%;
+  --ring: 270 85% 65%;              /* Roxo para foco */
   --radius: 0.75rem;
+  
+  /* Glow Colors - Roxo Premium */
+  --glow-primary: 270 100% 65%;
+  --glow-accent: 280 100% 70%;
+  --glow-success: 142 76% 50%;
+  --glow-warning: 38 92% 55%;
+  --glow-error: 0 84% 65%;
 
   /* Status Colors */
   --success: 142 76% 36%;           /* #10b981 - Emerald 500 */
@@ -35,9 +42,9 @@
   --info: 217 91% 60%;              /* #3b82f6 - Blue 500 */
 
   /* Legacy - mantido para compatibilidade */
-  --color-void: #020617;
+  --color-void: #0D0A14;
   --color-neon: oklch(0.65 0.25 290);
-  --color-aurora-purple: oklch(0.45 0.20 280);
+  --color-aurora-purple: oklch(0.55 0.25 280);
   --color-aurora-blue: oklch(0.60 0.20 240);
   --color-aurora-teal: oklch(0.70 0.15 180);
 
@@ -46,6 +53,11 @@
   --animate-materialize: materialize 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-collapsible-down: collapsible-down 0.2s ease-out;
   --animate-collapsible-up: collapsible-up 0.2s ease-out;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 3s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
+  --animate-gradient-shift: gradient-shift 8s ease infinite;
+  --animate-stagger-delay: 0.1s;
 
   @keyframes float {
 
@@ -104,6 +116,49 @@
       height: 0;
     }
   }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.3);
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 30px hsl(var(--glow-primary) / 0.5);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 1;
+      filter: drop-shadow(0 0 10px hsl(var(--glow-primary) / 0.5));
+    }
+    50% {
+      opacity: 0.85;
+      filter: drop-shadow(0 0 20px hsl(var(--glow-primary) / 0.8)) drop-shadow(0 0 30px hsl(var(--glow-accent) / 0.4));
+    }
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 }
 
 @layer base {
@@ -112,16 +167,18 @@
   }
   
   body {
-    background-color: hsl(var(--background));
+    background: radial-gradient(ellipse at top, hsl(240 10% 10%) 0%, hsl(var(--background)) 50%);
+    background-attachment: fixed;
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: var(--font-sans);
+    min-height: 100vh;
   }
   
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   
   code, pre, kbd {
@@ -131,28 +188,28 @@
 
 /* Glassmorphism 2.0 System - Premium Law Firm */
 @utility glass-panel {
-  @apply bg-gradient-to-br from-white/[0.03] to-white/[0.01] backdrop-blur-[40px] border border-white/10 rounded-[24px] shadow-2xl;
+  @apply bg-gradient-to-br from-white/[0.05] to-white/[0.02] backdrop-blur-[40px] border border-white/12 rounded-[24px];
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
   background-image: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.01) 100%);
 }
 
 @utility glass-input {
-  @apply bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-xl transition-all duration-300;
+  @apply bg-white/[0.04] backdrop-blur-xl border border-white/12 rounded-xl transition-all duration-300;
   box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.3),
-    0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    inset 0 1px 3px 0 rgba(0, 0, 0, 0.2),
+    0 1px 2px 0 rgba(0, 0, 0, 0.1);
 
   &:focus-within {
-    border-color: hsl(var(--primary) / 0.5);
-    @apply bg-white/[0.05];
+    border-color: hsl(var(--primary) / 0.4);
+    @apply bg-white/[0.06];
     box-shadow:
-      inset 0 2px 4px 0 rgba(0, 0, 0, 0.3),
-      0 0 0 3px hsl(var(--primary) / 0.1),
-      0 0 20px hsl(var(--primary) / 0.2);
+      inset 0 1px 3px 0 rgba(0, 0, 0, 0.2),
+      0 0 0 3px hsl(var(--primary) / 0.08),
+      0 0 16px hsl(var(--primary) / 0.12);
   }
 }
 
@@ -171,4 +228,104 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Premium Glow Utilities */
+@utility glass-card-gradient {
+  @apply bg-gradient-to-br from-white/[0.06] via-white/[0.03] to-white/[0.01];
+  @apply backdrop-blur-[40px];
+  @apply border border-white/[0.12];
+  @apply rounded-xl;
+  position: relative;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, 
+      hsl(var(--glow-primary) / 0.08) 0%,
+      transparent 40%,
+      hsl(var(--glow-accent) / 0.06) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+@utility border-glow {
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 0 0 1px hsl(var(--glow-primary) / 0.1);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 1px hsl(var(--glow-primary) / 0.3), 
+                0 0 20px hsl(var(--glow-primary) / 0.2);
+  }
+}
+
+@utility shadow-soft {
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@utility shadow-glow-soft {
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 0 12px hsl(var(--glow-primary) / 0.08);
+}
+
+@utility shadow-card {
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    0 0 20px hsl(var(--glow-primary) / 0.06);
+}
+
+@utility shadow-glow-sm {
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 0 12px hsl(var(--glow-primary) / 0.12);
+}
+
+@utility shadow-glow-md {
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 0 24px hsl(var(--glow-primary) / 0.15);
+}
+
+@utility shadow-glow-lg {
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 40px hsl(var(--glow-primary) / 0.2);
+}
+
+@utility animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Premium Utility Classes for Legal System */
+@utility stagger-1 { animation-delay: 0.05s; }
+@utility stagger-2 { animation-delay: 0.1s; }
+@utility stagger-3 { animation-delay: 0.15s; }
+@utility stagger-4 { animation-delay: 0.2s; }
+
+@utility border-accent-bottom {
+  border-bottom: 2px solid;
+  border-image: linear-gradient(90deg, transparent, hsl(var(--glow-primary)), transparent) 1;
 }

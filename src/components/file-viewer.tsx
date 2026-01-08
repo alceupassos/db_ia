@@ -45,6 +45,7 @@ export function FileViewer({ arquivo }: FileViewerProps) {
         {arquivo.url && !error ? (
           <>
             {isImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={arquivo.url}
                 alt={arquivo.nome}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+    <rect width="800" height="600" fill="#0D0A14"/>
+    <rect x="200" y="100" width="400" height="400" rx="20" fill="#1a1625" stroke="#8B5CF6" stroke-width="2"/>
+    <path d="M250 150 H550 V450 H250 Z" fill="#ffffff" fill-opacity="0.05"/>
+    <g transform="translate(400, 300) rotate(-30)">
+      <rect x="-10" y="-100" width="20" height="150" rx="10" fill="#8B5CF6"/>
+      <path d="M-10 50 L0 70 L10 50 Z" fill="#A78BFA"/>
+    </g>
+    <path d="M300 400 Q 400 350, 500 400 T 550 380" stroke="#8B5CF6" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <text x="400" y="550" fill="#A78BFA" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">Manual Signature</text>
+  </svg>

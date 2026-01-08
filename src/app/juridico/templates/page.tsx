@@ -9,6 +9,9 @@ import { Scale, Search, FileText } from 'lucide-react';
 import { SkeletonTable } from '@/components/skeleton-loader';
 import { EmptyState } from '@/components/empty-state';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { GlowCard } from '@/components/ui/glow-card';
+import { Badge } from '@/components/ui/badge';
 
 interface Template {
   id: string;
@@ -29,7 +32,7 @@ export default function TemplatesPage() {
 
   useEffect(() => {
     loadTemplates();
-  }, [categoriaFilter, empresaFilter]);
+  }, [categoriaFilter, empresaFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function loadTemplates() {
     try {
@@ -60,11 +63,13 @@ export default function TemplatesPage() {
   const categorias = Array.from(new Set(templates.map(t => t.categoria)));
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="flex-1 space-y-8 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Templates Jurídicos</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-light tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Templates Jurídicos
+          </h1>
+          <p className="text-muted-foreground mt-1">
             Banco de templates bilingues para contratos, procurações e documentos
           </p>
         </div>
@@ -116,44 +121,59 @@ export default function TemplatesPage() {
               description="Não há templates cadastrados ainda"
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredTemplates.map((template) => (
-                <Card key={template.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{template.nome_pt}</CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">{template.nome_en}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTemplates.map((template, index) => (
+                <motion.div
+                  key={template.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <GlowCard
+                    glowColor="primary"
+                    variant="gradient"
+                    className="h-full flex flex-col group hover:scale-[1.02] transition-transform duration-300"
+                  >
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg font-medium leading-tight">
+                            {template.nome_pt}
+                          </CardTitle>
+                          <p className="text-sm text-muted-foreground mt-1.5">
+                            {template.nome_en}
+                          </p>
+                        </div>
+                        <Scale className="h-5 w-5 text-primary opacity-60" />
                       </div>
-                      <Scale className="h-5 w-5 text-primary" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {template.descricao_pt && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {template.descricao_pt}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="px-2 py-1 bg-primary/10 text-primary rounded">
-                        {template.categoria}
-                      </span>
-                      <span className="px-2 py-1 bg-secondary rounded">
-                        {template.empresa}
-                      </span>
-                    </div>
-                    {template.orgao_destino && template.orgao_destino.length > 0 && (
-                      <div className="text-xs text-muted-foreground">
-                        Órgãos: {template.orgao_destino.join(', ')}
+                    </CardHeader>
+                    <CardContent className="flex flex-col flex-1 space-y-4">
+                      {template.descricao_pt && (
+                        <p className="text-sm text-muted-foreground line-clamp-3 flex-1">
+                          {template.descricao_pt}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="outline" className="text-xs border-primary/30 text-primary/90 bg-primary/5">
+                          {template.categoria}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {template.empresa}
+                        </Badge>
                       </div>
-                    )}
-                    <Link href={`/juridico/templates/${template.id}`}>
-                      <Button className="w-full" variant="outline">
-                        Usar Template
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                      {template.orgao_destino && template.orgao_destino.length > 0 && (
+                        <div className="text-xs text-muted-foreground pt-2 border-t border-border/30">
+                          <span className="font-medium">Órgãos:</span> {template.orgao_destino.join(', ')}
+                        </div>
+                      )}
+                      <Link href={`/juridico/templates/${template.id}`}>
+                        <Button className="w-full mt-auto" variant="outline">
+                          Usar Template
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </GlowCard>
+                </motion.div>
               ))}
             </div>
           )}

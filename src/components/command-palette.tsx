@@ -8,7 +8,6 @@ import {
   Search, 
   FileText, 
   Users, 
-  Settings, 
   BarChart3,
   MessageSquare,
   FolderOpen,
